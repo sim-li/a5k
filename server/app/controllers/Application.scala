@@ -1,15 +1,13 @@
 package controllers
-
-import akka.actor.{ActorSystem, Actor, ActorRef, Props}
-import akka.actor.Actor.Receive
-import models.WSCommunicationCmds
-import play.api.libs.json.JsValue
-import play.api.mvc._
 import play.api.Play.current
-import be.doeraene.spickling._
+import akka.actor.{Actor, Props, ActorRef}
 import be.doeraene.spickling.PicklerRegistry
-import WSCommunicationCmds.User
+import models.WSCommunicationCmds
+import models.WSCommunicationCmds.User
+import play.api.libs.json._
+// import the implicits for the Play! JSON pickle format
 import be.doeraene.spickling.playjson._
+import play.api.mvc.{RequestHeader, WebSocket, Action, Controller}
 
 object Application extends Controller {
 
@@ -27,9 +25,7 @@ object Application extends Controller {
     override def receive: Receive = {
       case json: JsValue =>
         println(s"${json}")
-        import PicklerRegistry.register
-        register[User]
-        PicklerRegistry.pickle(User("Ralf"))
+
 //        val unpickledMsg = PicklerRegistry.unpickle(json)
 
 
@@ -56,6 +52,12 @@ object Application extends Controller {
 //  }
 
   def index = Action {
+
+    import PicklerRegistry.register
+    register[User]
+
+    val ralf = User("Ralf")
+    val pickled = PicklerRegistry.pickle(ralf)
     Ok(views.html.index(WSCommunicationCmds.itWorks))
   }
 

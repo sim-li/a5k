@@ -8,7 +8,7 @@ object PicklerSetup {
   def setup = {
     import PicklerRegistry.register
     register[User]
-    register[UserValidatable]
-    register[::[Any]]
+//    register[UserValidatable]
+//    register[::[Any]]
   }
 }

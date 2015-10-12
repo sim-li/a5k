@@ -7,7 +7,7 @@ object WSCommunicationCmds {
   abstract class ATReceiver()
   abstract class Model() extends AToolMsg
   abstract class Event() extends AToolMsg
-  case class User(name: String) extends Model
+  case class User(name: String)
   case class ConnectUser(user: User) extends Event
   case class DisconnectUser(user: User) extends Event
   case class SignedIn(user:User) extends Event
