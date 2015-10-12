@@ -27,6 +27,7 @@ object TestPickleExperimentsSuite extends utest.TestSuite {
       val pickle: js.Any = PicklerRegistry.pickle(alice)
       assert(PicklerRegistry.unpickle(pickle) == alice)
     }
+
     "pickle and unpickle class hirarchy" - {
       PicklerRegistry.register[User]
       PicklerRegistry.register[ConnectUser]
