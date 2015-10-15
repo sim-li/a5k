@@ -1,7 +1,17 @@
+/***
+  *                  _           _    _______          _  ___   ___   ___   ___
+  *         /\      | |         (_)  |__   __|        | |/ _ \ / _ \ / _ \ / _ \
+  *        /  \   __| |_ __ ___  _ _ __ | | ___   ___ | | (_) | | | | | | | | | |
+  *       / /\ \ / _` | '_ ` _ \| | '_ \| |/ _ \ / _ \| |\__, | | | | | | | | | |
+  *      / ____ \ (_| | | | | | | | | | | | (_) | (_) | |  / /| |_| | |_| | |_| |
+  *     /_/    \_\__,_|_| |_| |_|_|_| |_|_|\___/ \___/|_| /_/  \___/ \___/ \___/
+  *      B.A. Mediainformatics THESIS SIMON LISCHKA, reactive as hell.
+  *              Beuth University of Applied Sciencies, 2015/2016
+  *
+  */
 import sbt.Project.projectToRef
 lazy val clients = Seq(client)
 lazy val scalaV = "2.11.7"
-lazy val akkaVersion = "2.4.0"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
@@ -10,10 +20,7 @@ lazy val server = (project in file("server")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
-    "org.webjars" % "jquery" % "1.11.1",
-    "org.scalaz" %% "scalaz-core" % "7.1.2",
     "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0"
-//    "com.typesafe.akka" %% "akka-actor" % "2.4.0",
   )
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
@@ -24,8 +31,7 @@ lazy val client = (project in file("client")).settings(
   persistLauncher := true,
   persistLauncher in Test := false,
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-    "com.github.japgolly.fork.scalaz" %%% "scalaz-core" % "7.1.2"
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)
@@ -33,13 +39,11 @@ lazy val client = (project in file("client")).settings(
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(scalaVersion := scalaV,
     libraryDependencies ++= Seq(
-//    "com.lihaoyi" %%% "utest" % "0.3.1",
+    "com.lihaoyi" %%% "utest" % "0.3.1",
     "be.doeraene" %%% "scalajs-pickling-core" % "0.4.0",
-    "com.lihaoyi" %%% "pprint" % "0.3.6",
-    "org.scalaz" %% "scalaz-core" % "7.1.2"
-    )
-//    ,
-//    testFrameworks += new TestFramework("utest.runner.Framework")
+    "com.lihaoyi" %%% "pprint" % "0.3.6"
+    ),
+    testFrameworks += new TestFramework("utest.runner.Framework")
   ).
 
   jsConfigure(_ enablePlugins ScalaJSPlay)
