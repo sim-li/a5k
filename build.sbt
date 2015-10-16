@@ -20,8 +20,10 @@ lazy val server = (project in file("server")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
-    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0"
-  )
+    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0",
+    "com.lihaoyi" %% "utest" % "0.3.1"
+  ),
+  testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
   dependsOn(sharedJvm)
@@ -32,7 +34,8 @@ lazy val client = (project in file("client")).settings(
   persistLauncher in Test := false,
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.8.0"
-  )
+  ),
+  testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)
 
