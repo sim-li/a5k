@@ -5,13 +5,20 @@
   *       / /\ \ / _` | '_ ` _ \| | '_ \| |/ _ \ / _ \| |\__, | | | | | | | | | |
   *      / ____ \ (_| | | | | | | | | | | | (_) | (_) | |  / /| |_| | |_| | |_| |
   *     /_/    \_\__,_|_| |_| |_|_|_| |_|_|\___/ \___/|_| /_/  \___/ \___/ \___/
-  *      B.A. Mediainformatics THESIS SIMON LISCHKA, reactive as hell.
+  *                B.A. THESIS SIMON LISCHKA, reactive as hell.
   *              Beuth University of Applied Sciencies, 2015/2016
   *
   */
 import sbt.Project.projectToRef
 lazy val clients = Seq(client)
 lazy val scalaV = "2.11.7"
+
+lazy val root = project.in(file(".")).
+  aggregate(client, server).
+  settings(
+    publish := {},
+    publishLocal := {}
+  )
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
@@ -20,8 +27,7 @@ lazy val server = (project in file("server")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
-    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0",
-    "com.lihaoyi" %% "utest" % "0.3.1"
+    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(PlayScala).
@@ -42,7 +48,7 @@ lazy val client = (project in file("client")).settings(
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(scalaVersion := scalaV,
     libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest" % "0.3.1",
+    "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
     "be.doeraene" %%% "scalajs-pickling-core" % "0.4.0",
     "com.lihaoyi" %%% "pprint" % "0.3.6"
     ),
