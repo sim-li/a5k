@@ -24,17 +24,13 @@ object Application extends Controller {
   class UserActor(out: ActorRef) extends Actor {
     override def receive: Receive = {
       case json: JsValue =>
-        println(s"${json}")
-
+        println(s"Hey, I got a really pretty pretty JSON! Oh wuhu! ${json}")
 //        val unpickledMsg = PicklerRegistry.unpickle(json)
-
-
-
 //      case User(name: String) =>
 //        println(s"Got a user!${name}, sending Shia")
 //        out !
       case _ =>
-        println("Got something, who knows.")
+        println("Got something, who knows what.")
     }
   }
 
@@ -52,12 +48,6 @@ object Application extends Controller {
 //  }
 
   def index = Action {
-
-    import PicklerRegistry.register
-    register[User]
-
-    val ralf = User("Ralf")
-    val pickled = PicklerRegistry.pickle(ralf)
     Ok(views.html.index(WSCommunicationCmds.itWorks))
   }
 

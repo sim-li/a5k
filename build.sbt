@@ -13,13 +13,6 @@ import sbt.Project.projectToRef
 lazy val clients = Seq(client)
 lazy val scalaV = "2.11.7"
 
-lazy val root = project.in(file(".")).
-  aggregate(client, server).
-  settings(
-    publish := {},
-    publishLocal := {}
-  )
-
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
   scalaJSProjects := clients,
@@ -27,11 +20,12 @@ lazy val server = (project in file("server")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
-    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0"
+    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0",
+    "com.lihaoyi" %% "utest" % "0.3.1" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(PlayScala).
-  aggregate(clients.map(projectToRef): _*).
+  aggregate(projectToRef(sharedJvm)).
   dependsOn(sharedJvm)
 
 lazy val client = (project in file("client")).settings(
@@ -43,6 +37,7 @@ lazy val client = (project in file("client")).settings(
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
+  aggregate(projectToRef(sharedJs)).
   dependsOn(sharedJs)
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
@@ -56,6 +51,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   ).
 
   jsConfigure(_ enablePlugins ScalaJSPlay)
+
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
