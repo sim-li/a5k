@@ -58,7 +58,8 @@
 //
 //    "valid user name should pass" - {
 //      val alice = new UserValidatable("alice").validate() match {
-//        case Success(alice: UserValidatable) => assert(alice.name == "alice")
+//        case Success(alice: UserValidatable) =>
+//             assert(alice.name == "alice")
 //        case Failure(_) => assert(false)
 //      }
 //    }
