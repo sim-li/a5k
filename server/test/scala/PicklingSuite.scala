@@ -2,13 +2,13 @@ package scala
 
 import utest._
 import prickle._
-import scala.pickleTestResources._
-import scala.pickleTestResources.actions.NodeExpr
+import scala.picklingResources.models.{Model, NodeExpr, Actions}
 import scala.util.{Try, Failure, Success}
-import PickleTestModel._
+import Model._
+import Actions._
 
-object ServerPickleExperimentsSuite extends utest.TestSuite {
-  import PickleTestModel.Picklers._
+object PicklingSuite extends utest.TestSuite {
+  import Model.Picklers._
 
   def tests = TestSuite {
     def assertPicklingAndUnpickling(sourceData: NodeExpr) = {
@@ -23,11 +23,25 @@ object ServerPickleExperimentsSuite extends utest.TestSuite {
 
     "pickle composed registered node hirarchy" - {
       assertPicklingAndUnpickling {
-        PNode.withParameters(
+        Node.withParameters(
           PPath("my-node-path-123"),
           PHddUsage(3),
           PBandWidth(2.0)
         )
+      }
+    }
+
+    // Current issue: "Composite Pickler Composition",
+    // Model.Picklers and Actions.Picklers
+    "event orientated object composition" - {
+      assertPicklingAndUnpickling {
+        UpdateModel {
+          Node.withParameters(
+            PPath("my-node-path-123"),
+            PHddUsage(3),
+            PBandWidth(2.0)
+          )
+        }
       }
     }
 

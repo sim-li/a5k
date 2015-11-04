@@ -1,15 +1,14 @@
-package scala.pickleTestResources
+package scala.picklingResources.models
 
 import prickle.{CompositePickler, PicklerPair}
-import scala.pickleTestResources.actions.NodeExpr
 
-object PickleTestModel {
+object Model {
 
-  case class PNode(pars: Seq[NodeExpr]) extends NodeExpr
+  case class Node(pars: Seq[NodeExpr]) extends NodeExpr
 
-  object PNode {
-    def withParameters(els: NodeExpr*): PNode = {
-      new PNode(els.toSeq)
+  object Node {
+    def withParameters(els: NodeExpr*): Node = {
+      new Node(els.toSeq)
     }
   }
 
@@ -21,7 +20,7 @@ object PickleTestModel {
 
   object Picklers {
     implicit def pickleTestModelPickler: PicklerPair[NodeExpr] = CompositePickler[NodeExpr].
-      concreteType[PNode].
+      concreteType[Node].
       concreteType[PPath].
       concreteType[PHddUsage].
       concreteType[PBandWidth]
