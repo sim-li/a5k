@@ -1,7 +1,6 @@
 package example
 
 import be.doeraene.spickling.PicklerRegistry
-import global.PicklerSetup
 import models.{WSCommunicationCmds}
 import org.scalajs.dom.{MessageEvent, Event}
 import WSCommunicationCmds.User

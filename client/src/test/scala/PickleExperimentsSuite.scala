@@ -1,7 +1,6 @@
 import akka.actor.{ActorRef, Props, ActorSystem, Actor}
 import akka.event.LoggingReceive
 import be.doeraene.spickling.PicklerRegistry
-import global.PicklerSetup
 import pprint.PPrint
 import utest._
 import utest.framework.Result

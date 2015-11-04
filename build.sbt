@@ -20,8 +20,8 @@ lazy val server = (project in file("server")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
-    "be.doeraene" %% "scalajs-pickling-play-json" % "0.4.0",
-    "com.lihaoyi" %% "utest" % "0.3.1" % "test"
+    "com.lihaoyi" %% "utest" % "0.3.1" % "test",
+    "com.github.benhutchison" %% "prickle" % "1.1.9"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(PlayScala).
@@ -44,7 +44,6 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(scalaVersion := scalaV,
     libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
-    "be.doeraene" %%% "scalajs-pickling-core" % "0.4.0",
     "com.lihaoyi" %%% "pprint" % "0.3.6"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
