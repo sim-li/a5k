@@ -1,4 +1,4 @@
-package scala.picklingResources.models
+package scala.de.bht.lischka.adminTool5k.models
 
 import prickle.{CompositePickler, PicklerPair}
 

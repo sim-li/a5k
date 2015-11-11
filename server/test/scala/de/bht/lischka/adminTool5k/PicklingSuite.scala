@@ -1,12 +1,16 @@
-package scala
+package scala.de.bht.lischka.adminTool5k
 
+import prickle.{Pickle, Unpickle}
 import utest._
-import prickle._
-import scala.picklingResources.models.{Model, NodeExpr, Actions}
-import scala.util.{Try, Failure, Success}
-import Model._
-import Actions._
 
+import scala.picklingResources.models.Actions.UpdateModel
+import scala.picklingResources.models.Model.{Node, PBandWidth, PHddUsage, PPath}
+import scala.picklingResources.models.{Model, NodeExpr}
+import scala.util.{Failure, Success}
+
+/**
+ * Created by funkdunhatta on 11.11.15.
+ */
 object PicklingSuite extends utest.TestSuite {
   import Model.Picklers._
 
