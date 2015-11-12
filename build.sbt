@@ -10,12 +10,10 @@
   *
   */
 import sbt.Project.projectToRef
-lazy val clients = Seq(client)
 lazy val scalaV = "2.11.7"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
-  scalaJSProjects := clients,
   pipelineStages := Seq(scalaJSProd/*, gzip*/),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
@@ -39,6 +37,13 @@ lazy val client = (project in file("client")).settings(
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   aggregate(projectToRef(sharedJs)).
   dependsOn(sharedJs)
+  .settings(
+    Seq(fastOptJS, fullOptJS) map {
+      packageJSKey =>
+        crossTarget in (Compile, packageJSKey) :=
+          (baseDirectory in server).value / "public/javascripts"
+    }: _*
+  )
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(scalaVersion := scalaV,
@@ -47,9 +52,8 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
     "com.lihaoyi" %%% "pprint" % "0.3.6"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
-  ).
+  )
 
-  jsConfigure(_ enablePlugins ScalaJSPlay)
 
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js

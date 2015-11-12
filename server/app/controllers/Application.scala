@@ -1,7 +1,6 @@
 package controllers
 import play.api.Play.current
 import akka.actor.{Actor, Props, ActorRef}
-import models.WSCommunicationCmds
 import play.api.libs.json._
 import play.api.mvc.{RequestHeader, WebSocket, Action, Controller}
 
