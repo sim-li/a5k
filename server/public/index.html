@@ -5,61 +5,128 @@
     <title>AdminTool 5K</title>
 </head>
 <body>
-    <!-- Scala.js compiled fastOpt code -->
-    <script type="text/javascript" src="javascripts/client-fastopt.js"></script>
-    <!-- JQuery.min.JS -->
-    <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
-
-    <!-- Bootstrap.min.JS -->
-    <script type="text/javascript" src="lib/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-
-    <!-- Bootstrap.min.CSS -->
-    <link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.min.css">
-
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand">
-                    <b>AdminTool5000</b>
-                    <!--<img alt="Brand" src="...">-->
-                </a>
-                <a class="navbar-brand">
-                    <small>Asynchronous client/server communication</small>
-                </a>
-                <a class="navbar-brand">
-                    <span class="badge">
-                        <small>Bachelor thesis Simon Lischka</small>
-                    </span>
-                </a>
-            </div>
+<script type="text/javascript" src="javascripts/client-fastopt.js"></script>
+<script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="lib/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">
+                <b>AdminTool5000</b>
+            </a>
+            <a class="navbar-brand">
+                <small>Bachelor thesis Simon Lischka</small>
+            </a>
         </div>
-    </nav>
+        <a class="navbar-brand pull-right">
+            <div class="navbar-header">
+                <small>Asynchronous client/server communication</small>
+            </div>
+        </a>
+    </div>
+    </div>
+</nav>
+<div class="container hidden" id="login-container">
+    <div class="jumbotron">
+        <h1>Hello, Admin!</h1>
 
-    <div class="container" id="login-container">
-        <div class="jumbotron">
-            <h1>Hello, Admin!</h1>
-            <p>This is a colaborative shell hacking application for educational purposes.
-            Enter a nickname to start administrating the remote system. As for passwords, for the moment we'll just trust you.</p>
-            <div class="well">
-                <p>
-                    <form class="form-inline">
-                        <div class="form-group has-error">
-                            <label class="control-label" for="name-field">Nickname</label>
-                            <input type="text" class="form-control" id="name-field" placeholder="John Coffee">
-                        </div>
-                             <button type="button" class="btn btn-primary" id="login-button">Start hacking</button>
-                    </form>
-                </p>
-            </div>
-            <div class="alert alert-danger" role="alert">
-                <div class="alert-link">ABC</div>
-            </div>
+        <p>This is a colaborative shell hacking application for educational purposes.
+            Enter a nickname to start administrating the remote system. As for passwords, for the moment we'll just
+            trust you.</p>
+
+        <div class="well">
+            <p>
+
+            <form class="form-inline">
+                <div class="form-group has-error">
+                    <label class="control-label" for="name-field">Nickname</label>
+                    <input type="text" class="form-control" id="name-field" placeholder="John Coffee">
+                </div>
+                <button type="button" class="btn btn-primary" id="login-button">Start hacking</button>
+            </form>
+            </p>
+        </div>
+        <div class="alert alert-danger" role="alert">
+            <div class="alert-link">ABC</div>
         </div>
     </div>
-    <!-- Run AdminToolFE -->
-    <script type="text/javascript">
-        de.bht.lischka.adminTool5k.AdminTool5kClient().main()
-    </script>
+</div>
+<div class="container" id="main-container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="jumbotron">
+                <h1>Hello, Bob!</h1>
 
+                <p>You are
+                    <button type="button" class="btn btn-success">live</button>
+                    <button type="button" class="btn btn-danger hidden">offline</button>
+                    with 192.168.56.101
+                <div class="well">
+                    <div class="list-group">
+                        <!-- You can set active here and a href="#" instead of div -->
+                        <div class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="badge">Alice</span>&nbsp;ls -al</h4>
+
+                            <p class="list-group-item-text">
+                                <code><h6>total&nbsp;40<br>drwxr-xr-x&nbsp;&nbsp;&nbsp;8&nbsp;funkdunhatta&nbsp;&nbsp;staff&nbsp;&nbsp;&nbsp;272&nbsp;&nbsp;2&nbsp;Okt&nbsp;22:35&nbsp;.
+                                    <br>drwxr-xr-x+&nbsp;77&nbsp;funkdunhatta&nbsp;&nbsp;staff&nbsp;&nbsp;2618&nbsp;&nbsp;3&nbsp;Okt&nbsp;23:21&nbsp;..<br>-rw-r--r--@&nbsp;&nbsp;
+                                    1&nbsp;funkdunhatta&nbsp;&nbsp;staff&nbsp;&nbsp;8196&nbsp;&nbsp;2&nbsp;Okt&nbsp;22:37&nbsp;.DS_Store<br>drwxr-xr-x&nbsp;&nbsp;15&nbsp;funkdunhatta
+                                    &nbsp;&nbsp;staff&nbsp;&nbsp;&nbsp;510&nbsp;&nbsp;6&nbsp;Okt&nbsp;22:53&nbsp;.git<br>-rw-r--r--&nbsp;&nbsp;&nbsp;1&nbsp;funkdunhatta&nbsp;&nbsp;staff
+                                    &nbsp;&nbsp;1662&nbsp;18&nbsp;Sep&nbsp;16:39&nbsp;.gitignore<br>drwxr-xr-x&nbsp;&nbsp;12&nbsp;funkdunhatta&nbsp;&nbsp;staff&nbsp;&nbsp;&nbsp;408&nbsp;
+                                    &nbsp;6&nbsp;Okt&nbsp;19:50&nbsp;adminTool5000<br>-rw...
+                                </h6>
+                                </code></p>
+                            <h6 class="list-group-item-footer text-right"><b>01.01.2015 15:30:42</b></h6>
+                        </div>
+                        <div class="list-group-item">
+                            <h4 class="list-group-item-heading"><span class="badge">Bob</span>&nbsp;date</h4>
+
+                            <p class="list-group-item-text">
+                                <code><h6>Di&nbsp;&nbsp;6&nbsp;Okt&nbsp;2015&nbsp;23:10:36&nbsp;CEST<br>
+                                </h6></code></p>
+                            <h6 class="list-group-item-footer text-right"><b>01.01.2015 14:30:42</b></h6>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Run command on server...">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Go</button>
+                      </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading"><b>Users connected</b>
+
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">Alice</a>
+                        <a href="#" class="list-group-item">Bob</a>
+                        <a href="#" class="list-group-item">Kptn Cook</a>
+                    </div>
+                </div>
+                <div class="panel-heading"><b>Top system stats</b> 13:30:41:50
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th>PID</th>
+                            <th>COMMAND</th>
+                            <th>%CPU</th>
+                            <th>TIME</th>
+                            <th>MEM</th>
+                        </tr>
+                        <tr>
+                            <td>4148</td>
+                            <td>Google Chrome</td>
+                            <td>0.0</td>
+                            <td>00:01.82</td>
+                            <td>47M</td>
+                        </tr>
+                    </table>
+                </div>
+                <script type="text/javascript">
+                    de.bht.lischka.adminTool5k.AdminTool5kClient().main()
+                </script>
 </body>
 </html>
