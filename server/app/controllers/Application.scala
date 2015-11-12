@@ -20,10 +20,6 @@ object Application extends Controller {
     }
   }
 
-  def index = Action {
-    Ok(views.html.index(WSCommunicationCmds.itWorks))
-  }
-
   def socket = WebSocket.acceptWithActor[JsValue, JsValue] {
     request: RequestHeader =>
       out: ActorRef =>

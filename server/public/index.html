@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AdminTool 5K</title>
+</head>
+<body>
+    <!-- Scala.js compiled fastOpt code -->
+    <script type="text/javascript" src="../../../target/scala-2.11/admintool-5000-fastopt.js"></script>
+    <!-- JQuery.min.JS -->
+    <script type="text/javascript" src="../lib/jquery-2.1.4.min.js"></script>
+
+    <!-- Bootstrap.min.JS -->
+    <script type="text/javascript" src="../lib/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap.min.CSS -->
+    <link rel="stylesheet" href="../lib/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">
+                    <b>AdminTool5000</b>
+                    <!--<img alt="Brand" src="...">-->
+                </a>
+                <a class="navbar-brand">
+                    <small>Asynchronous client/server communication</small>
+                </a>
+                <a class="navbar-brand">
+                    <span class="badge">
+                        <small>Bachelor thesis Simon Lischka</small>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="login-container">
+        <div class="jumbotron">
+            <h1>Hello, Admin!</h1>
+            <p>This is a colaborative shell hacking application for educational purposes.
+            Enter a nickname to start administrating the remote system. As for passwords, for the moment we'll just trust you.</p>
+            <div class="well">
+                <p>
+                    <form class="form-inline">
+                        <div class="form-group has-error">
+                            <label class="control-label" for="name-field">Nickname</label>
+                            <input type="text" class="form-control" id="name-field" placeholder="John Coffee">
+                        </div>
+                             <button type="button" class="btn btn-primary" id="login-button">Start hacking</button>
+                    </form>
+                </p>
+            </div>
+            <div class="alert alert-danger" role="alert">
+                <div class="alert-link">ABC</div>
+            </div>
+        </div>
+    </div>
+    <!-- Run AdminToolFE -->
+    <script type="text/javascript">
+        adminTool5000.Main().main()
+    </script>
+
+</body>
+</html>
