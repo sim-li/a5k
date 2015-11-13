@@ -10,12 +10,13 @@ object AdminTool5kClient extends js.JSApp {
   def main(): Unit = {
     println("ScalaJS is here, my friend")
 
-    val url = "ws://localhost:9000/at5k/ws"
+    val url = "ws://localhost:9000/ws-entry"
     val socket = new dom.WebSocket(url)
 
     socket.onopen = {
       (e: Event) =>
         println("Wow, it opened :: the Websocket")
+        socket.send(js.JSON.stringify())
     }
 
     socket.onmessage = {

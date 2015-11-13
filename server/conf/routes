@@ -1,3 +1,5 @@
+GET     /ws-entry   controllers.Application.socket
+
 GET     /           controllers.Assets.at(path="/public", file="/index.html")
+
 GET     /*file      controllers.Assets.at(path="/public", file)
-GET     /at5k/ws    controllers.Application.socket
