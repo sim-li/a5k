@@ -20,11 +20,14 @@ object Model {
    case class PBandWidth(bw: Double) extends NodeExpr
 
    object Picklers {
-     implicit def pickleTestModelPickler: PicklerPair[NodeExpr] = CompositePickler[NodeExpr].
+     def pickleBuildPlan: PicklerPair[NodeExpr] = CompositePickler[NodeExpr].
        concreteType[Node].
        concreteType[PPath].
        concreteType[PHddUsage].
        concreteType[PBandWidth].
        concreteType[UpdateModel]
+
+     implicit def pickleTestModelPickler: PicklerPair[NodeExpr] = pickleBuildPlan
+
    }
  }
