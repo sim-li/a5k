@@ -3,20 +3,28 @@ import akka.actor._
 import org.scalajs.dom
 import org.scalajs.dom.{Event, MessageEvent}
 import scala.scalajs.js
+import prickle._
 
 object AdminTool5kClient extends js.JSApp {
+  import ModelX._
+  import ModelX.Picklers._
+
   val system = ActorSystem("adminTool5k-ui")
 
   def main(): Unit = {
-    println("ScalaJS is here, my friend")
-
     val url = "ws://localhost:9000/ws-entry"
     val socket = new dom.WebSocket(url)
 
     socket.onopen = {
       (e: Event) =>
-        println("Wow, it opened :: the Websocket")
-        socket.send(js.JSON.stringify())
+        /**
+          *  Has to happen! Specify super type!Auto type determination doesn't work!
+          */
+        def user: WSMessage = User("Test User")
+        def pickle =  Pickle.intoString(user)
+        println("Pickle is")
+        println(pickle)
+        socket.send(pickle)
     }
 
     socket.onmessage = {

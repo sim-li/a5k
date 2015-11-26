@@ -1,6 +1,5 @@
 package de.bht.lischka.adminTool5k.exploratory
 
-import de.bht.lischka.adminTool5k.exploratory.ActionCommands.UpdateModel
 import prickle.{CompositePickler, PicklerPair}
 
 object Model {
@@ -25,9 +24,8 @@ object Model {
        concreteType[PPath].
        concreteType[PHddUsage].
        concreteType[PBandWidth].
-       concreteType[UpdateModel]
 
      implicit def pickleTestModelPickler: PicklerPair[NodeExpr] = pickleBuildPlan
-
    }
+
  }

@@ -1,5 +1,6 @@
 package de.bht.lischka.adminTool5k.exploratory
 
+import de.bht.lischka.adminTool5k.NodeExpr
 import prickle.{Pickle, Unpickle}
 import utest._
 import scala.util.{Failure, Success}

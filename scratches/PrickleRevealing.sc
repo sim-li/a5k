@@ -49,3 +49,4 @@ case class Father[A <: AnyRef]()
 // Then later activate the implicit mechanism? >> implicit def
 //
 // Look into Odersky's Implicits, they offer the solution.
+

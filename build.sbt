@@ -49,7 +49,8 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(scalaVersion := scalaV,
     libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
-    "com.lihaoyi" %%% "pprint" % "0.3.6"
+    "com.lihaoyi" %%% "pprint" % "0.3.6",
+    "com.github.benhutchison" %%% "prickle" % "1.1.9"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
