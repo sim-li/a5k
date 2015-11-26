@@ -19,7 +19,8 @@ lazy val server = (project in file("server")).settings(
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
     "com.lihaoyi" %% "utest" % "0.3.1" % "test",
-    "com.github.benhutchison" %% "prickle" % "1.1.9"
+    "com.github.benhutchison" %% "prickle" % "1.1.9",
+    "com.vmunier" % "play-scalajs-sourcemaps_2.11" % "0.1.0"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")
 ).enablePlugins(PlayScala).
