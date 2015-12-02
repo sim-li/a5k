@@ -9,11 +9,17 @@ object ModelX {
 
   trait DataModel extends WSMessage
 
-  case class Hello(from: String) extends WSMessage
+  object User {
+    def none = User("")
+  }
 
   case class User(name: String) extends DataModel
 
-  case class ShellCommand(command: String, executionInfo: ExecutionInfo, issueInfo: IssueInfo) extends DataModel
+  case class LoginUser(user: User) extends WSMessage
+
+  case class ShellCommand(command: String, issueInfo: IssueInfo, executionInfo: Option[ExecutionInfo] = None) extends DataModel
+
+  case class ExecuteCommand(shellCommand: ShellCommand) extends WSMessage
 
   case class ExecutionInfo(response: String, commandExecuted: Date, success: Boolean) extends DataModel
 
@@ -45,7 +51,8 @@ object ModelX {
       concreteType[ShellCommand].
       concreteType[ExecutionInfo].
       concreteType[IssueInfo].
-      concreteType[Hello]
+      concreteType[LoginUser].
+      concreteType[ExecuteCommand]
 
     implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
       concreteType[Stat].

@@ -18,23 +18,22 @@
         %a.navbar-brand.pull-right
           .navbar-header
             %small Asynchronous client/server communication
-    #login-container.container.hidden
+    #login_container.container
       .jumbotron
         %h1 Hello, Admin!
         %p
           This is a colaborative shell hacking application for educational purposes.
-          Enter a nickname to start administrating the remote system. As for passwords, for the moment we'll just
-          trust you.
+          %br Enter a nickname to start administrating the remote system.
         .well
           %p
           %form.form-inline
             .form-group.has-error
               %label.control-label{:for => "name-field"} Nickname
-              %input#name-field.form-control{:placeholder => "John Coffee", :type => "text"}/
-            %button#login-button.btn.btn-primary{:type => "button"} Start hacking
+              %input#login_textfield.form-control{:placeholder => "John Coffee", :type => "text"}
+            %button#login_button.btn.btn-primary{:type => "button"} Start hacking
         .alert.alert-danger{:role => "alert"}
           .alert-link ABC
-    #main-container.container
+    #main_container.container{:style => "display:none;"}
       .row
         .col-md-8
           .jumbotron
@@ -78,9 +77,9 @@
                   %h6.list-group-item-footer.text-right
                     %b 01.01.2015 14:30:42
               .input-group
-                %input.form-control{:placeholder => "Run command on server...", :type => "text"}/
+                %input#command_textfield.form-control{:placeholder => "Run command on server...", :type => "text"}
                 %span.input-group-btn
-                  %button.btn.btn-default{:type => "button"} Go
+                  %button#send_command_button.btn.btn-default{:type => "button"} Go
         .col-md-4
           .panel.panel-default
             .panel-heading

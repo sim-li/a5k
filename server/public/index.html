@@ -26,22 +26,21 @@
         </a>
       </div>
     </nav>
-    <div class='container hidden' id='login-container'>
+    <div class='container' id='login_container'>
       <div class='jumbotron'>
         <h1>Hello, Admin!</h1>
         <p>
           This is a colaborative shell hacking application for educational purposes.
-          Enter a nickname to start administrating the remote system. As for passwords, for the moment we'll just
-          trust you.
+          <br>Enter a nickname to start administrating the remote system.</br>
         </p>
         <div class='well'>
           <p></p>
           <form class='form-inline'>
             <div class='form-group has-error'>
               <label class='control-label' for='name-field'>Nickname</label>
-              <input class='form-control' id='name-field' placeholder='John Coffee' type='text'>
+              <input class='form-control' id='login_textfield' placeholder='John Coffee' type='text'>
             </div>
-            <button class='btn btn-primary' id='login-button' type='button'>Start hacking</button>
+            <button class='btn btn-primary' id='login_button' type='button'>Start hacking</button>
           </form>
         </div>
         <div class='alert alert-danger' role='alert'>
@@ -49,7 +48,7 @@
         </div>
       </div>
     </div>
-    <div class='container' id='main-container'>
+    <div class='container' id='main_container' style='display:none;'>
       <div class='row'>
         <div class='col-md-8'>
           <div class='jumbotron'>
@@ -84,9 +83,9 @@
                 </div>
               </div>
               <div class='input-group'>
-                <input class='form-control' placeholder='Run command on server...' type='text'>
+                <input class='form-control' id='command_textfield' placeholder='Run command on server...' type='text'>
                 <span class='input-group-btn'>
-                  <button class='btn btn-default' type='button'>Go</button>
+                  <button class='btn btn-default' id='send_command_button' type='button'>Go</button>
                 </span>
               </div>
             </div>
