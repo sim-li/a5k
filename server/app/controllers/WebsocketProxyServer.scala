@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 
 object WebsocketProxyServer {
   def props(websocketOut: ActorRef, router: ActorRef) = Props(new WebsocketProxyServer(websocketOut, router))
-  case class UnpickleRawMessage(e: String)
+  case class ReceiveMessage(e: String)
 }
 
 class WebsocketProxyServer(websocketOut: ActorRef, router: ActorRef) extends Actor {
@@ -19,10 +19,10 @@ class WebsocketProxyServer(websocketOut: ActorRef, router: ActorRef) extends Act
 
   import WebsocketProxyServer._
   override def receive: Receive = {
-    case UnpickleRawMessage(str) => unpickleStrAndForward(str, self)
+    case ReceiveMessage(str) => unpickleStrAndForward(str, self)
     case SendMessage(wsMessage: WSMessage) => pickleToStrAndForward(wsMessage, websocketOut)
     case wsMessage: WSMessage => router ! wsMessage
-    case rawMessage: String => self ! UnpickleRawMessage(rawMessage)
+    case rawMessage: String => self ! ReceiveMessage(rawMessage)
     case defaultCase => logDefaultCaseFor("WebsocketProxyServer", defaultCase)
   }
 

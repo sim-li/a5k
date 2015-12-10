@@ -23,7 +23,7 @@ object Application extends Controller {
     override def receive: Actor.Receive = {
       case wsMessage: WSMessage =>
         wsMessage match {
-          case ExecuteCommand(command: ShellCommand) => println("Not implemented: Client, Router receive wsmessage")
+          case x: ExecuteCommand => println(s"Not implemented: Client, Router receive wsmessage ${x}")
           case x => println(s"Triggered default case with ${x}")
         }
     }

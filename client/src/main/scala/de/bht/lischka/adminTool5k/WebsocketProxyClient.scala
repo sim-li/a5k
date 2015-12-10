@@ -57,8 +57,7 @@ class WebsocketProxyClient() extends Actor {
       unpickleStrAndForward(messageEvent.data.toString(), context.parent)
 
     case SendMessage(x) =>
-      println("Got a send message command in proxy")
-      socket.send(Pickle.intoString(SendMessage(x)))
+      socket.send(Pickle.intoString(x))
 
     case ConnectionClosed => become(closed)
 
