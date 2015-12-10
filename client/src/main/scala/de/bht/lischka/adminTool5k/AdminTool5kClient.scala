@@ -6,8 +6,6 @@ import akka.actor.Actor.Receive
 import akka.actor._
 import akka.event.Logging
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
-import de.bht.lischka.adminTool5k.LoginScreen.{HideScreen, UserLoggedIn}
-import de.bht.lischka.adminTool5k.MainScreen.ShowScreen
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.WebsocketProxyClient.{Error, ConnectionClosed}
 import org.scalajs.dom
@@ -24,8 +22,7 @@ object AdminTool5kClient extends js.JSApp {
   def main(): Unit = {
     val system = ActorSystem("adminTool5k-client")
     val router = system.actorOf(Props[Router], "router")
-    val userState = system.actorOf(Props(classOf[UserState], router), "userState")
-    val mainScreen = system.actorOf(Props(classOf[MainScreen], userState, router), "mainScreen")
-    val loginScreen = system.actorOf(Props(classOf[LoginScreen], userState, mainScreen), "loginScreen")
+    val mainScreen = system.actorOf(Props(classOf[MainScreen], router), "mainScreen")
+    val loginScreen = system.actorOf(Props(classOf[LoginScreen], router), "loginScreen")
   }
 }

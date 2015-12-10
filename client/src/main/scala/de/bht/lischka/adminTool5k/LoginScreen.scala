@@ -1,19 +1,19 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Props, Actor, ActorRef}
-import de.bht.lischka.adminTool5k.LoginScreen.{HideScreen, UserLoggedIn}
+import de.bht.lischka.adminTool5k.InternalMessages.LoggedIn
 import de.bht.lischka.adminTool5k.ModelX.User
+import de.bht.lischka.adminTool5k.Router.RegisterUiComponent
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object LoginScreen {
-  def props(userState: ActorRef, mainScreen: ActorRef) = Props(new LoginScreen(userState, mainScreen))
-  case object UserLoggedIn
-  case object HideScreen
+  def props(router: ActorRef) = Props(new LoginScreen(router))
 }
 
-class LoginScreen(userState: ActorRef, mainScreen: ActorRef) extends Actor {
+class LoginScreen(router: ActorRef) extends Actor {
   override def preStart: Unit = {
     registerCallback()
+    router ! RegisterUiComponent(self)
   }
 
   def registerCallback() = {
@@ -23,17 +23,14 @@ class LoginScreen(userState: ActorRef, mainScreen: ActorRef) extends Actor {
         def userName = loginTextfield.value.toString()
         def validUsername = userName.length() > 0
         if (validUsername) {
-          userState ! User(userName)
+          self ! LoggedIn(User(userName))
         }
     }
   }
 
   override def receive: Receive = {
-    case UserLoggedIn =>
-      self ! HideScreen
-      mainScreen ! MainScreen.ShowScreen
-    case HideScreen =>
-      println("Login screen got hide message")
+    case LoggedIn(user: User) =>
       jQ("#login_container").hide()
+      router ! LoggedIn(user)
   }
 }

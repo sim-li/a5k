@@ -2,7 +2,7 @@ package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, Props, ActorRef}
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
-import de.bht.lischka.adminTool5k.WebsocketProxyClient.{UnpickleFromMessageEvent, ConnectionClosed, Error}
+import de.bht.lischka.adminTool5k.WebsocketProxyClient._
 import org.scalajs.dom
 import org.scalajs.dom._
 import prickle.{Pickle, Unpickle}
@@ -17,7 +17,7 @@ object WebsocketProxyClient {
 
   case class Error(e: Event)
 
-  case class UnpickleFromMessageEvent(e: MessageEvent)
+  case class ReceiveMessage(e: MessageEvent)
 }
 
 class WebsocketProxyClient() extends Actor {
@@ -32,17 +32,16 @@ class WebsocketProxyClient() extends Actor {
   def registerCallbacks() = {
     val url = "ws://localhost:9000/ws-entry"
     val socket = new dom.WebSocket(url)
-    socket.onopen = { (e: Event) => self ! socket } // Wrap Socket?
-    socket.onmessage = { (e: MessageEvent) => self ! WebsocketProxyClient.UnpickleFromMessageEvent(e) }
-    socket.onclose = { (e: Event) => self ! WebsocketProxyClient.ConnectionClosed }
-    socket.onerror = { (e: Event) => WebsocketProxyClient.Error(e) }
+    socket.onopen = { (e: Event) => self ! ConnectionEstablished(socket) }
+    socket.onmessage = { (e: MessageEvent) => self ! ReceiveMessage(e) }
+    socket.onclose = { (e: Event) => self ! ConnectionClosed }
+    socket.onerror = { (e: Event) => self ! Error(e) }
   }
 
   override def receive: Receive = disconnected
 
   def disconnected: Receive = {
-    case socket: dom.WebSocket =>
-      context.become(connected(socket))
+    case ConnectionEstablished(socket: dom.WebSocket) => context.become(connected(socket))
   }
 
   def closed: Receive = {
@@ -54,17 +53,18 @@ class WebsocketProxyClient() extends Actor {
   }
 
   def connected(socket: dom.WebSocket): Receive = {
-    case UnpickleFromMessageEvent(messageEvent: MessageEvent) => unpickleStrAndForward(messageEvent.data.toString(), context.parent)
+    case ReceiveMessage(messageEvent: MessageEvent) =>
+      unpickleStrAndForward(messageEvent.data.toString(), context.parent)
 
-    case SendMessage(wsMessage: WSMessage) =>
+    case SendMessage(x) =>
       println("Got a send message command in proxy")
-      socket.send(Pickle.intoString(wsMessage))
+      socket.send(Pickle.intoString(SendMessage(x)))
 
     case ConnectionClosed => become(closed)
 
-    case Error(e: Event) => println("Got an error, babe [Client]")
+    case Error(e: Event) => println("Error [Client]")
 
-    case _ => println("Default case [Client]")
+    case d => println(s"Default case [Client] with ${d}")
   }
 
   def unpickleStrAndForward(str: String, forwardingRef: ActorRef) = {

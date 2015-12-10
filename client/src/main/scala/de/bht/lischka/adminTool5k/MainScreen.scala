@@ -2,18 +2,21 @@ package de.bht.lischka.adminTool5k
 
 import java.util.Date
 import akka.actor.{Props, Actor, ActorRef}
-import de.bht.lischka.adminTool5k.MainScreen.ShowScreen
+import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, LoggedIn, LoggedOut}
 import de.bht.lischka.adminTool5k.ModelX.{ExecuteCommand, ShellCommand, User, IssueInfo}
+import de.bht.lischka.adminTool5k.Router.RegisterUiComponent
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
-  def props(userState: ActorRef, router: ActorRef) = Props(new MainScreen(userState, router))
-  case object ShowScreen
+  def props(router: ActorRef) = Props(new MainScreen(router))
 }
 
-class MainScreen(userState: ActorRef, router: ActorRef) extends Actor {
+class MainScreen(router: ActorRef) extends Actor {
+  override def receive: Receive = loggedOut
+
   override def preStart: Unit = {
     registerCallback()
+    router ! RegisterUiComponent(self)
   }
 
   def registerCallback() = {
@@ -23,13 +26,17 @@ class MainScreen(userState: ActorRef, router: ActorRef) extends Actor {
         val command: String = commandTextfield.value().toString()
         val issueInfo = IssueInfo(User("Rolf"), new Date())
         val shellCommand: ShellCommand = ShellCommand(command, issueInfo)
-        self ! ExecuteCommand(shellCommand)
+        router ! SendMessage(ExecuteCommand(shellCommand))
     }
   }
 
-  override def receive: Receive = {
-    case ShowScreen => jQ("#main_container").show()
+  def loggedOut: Receive = {
+    case LoggedIn(user: User) =>
+      context.become(loggedIn)
+      jQ("#main_container").show()
+  }
+
+  def loggedIn: Receive = {
     case other: Any => router ! other
   }
 }
-
