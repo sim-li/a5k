@@ -8,7 +8,7 @@ Consists of following projects:
 
 * `server` Play application (server side)
 * `client` Scala.js application (client side)
-* `shared` Scala code that you want to share between the server and the client
+* `shared` Shared code between Client and Server
 
 Besides Play uses
 
