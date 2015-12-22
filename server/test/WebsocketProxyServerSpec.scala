@@ -7,8 +7,13 @@ import de.bht.lischka.adminTool5k.ModelX.{TestWSMessage, LoginUser, User}
 import utest._
 import scala.concurrent.duration._
 
+/**
+  * Adding an extends TestKit forces us to place
+  * system in the main scope, therefore all tests will
+  * use one actor system which is not ideal since we want
+  * a clean state for every test we run.
+  */
 object SimpleSharedSuite extends utest.TestSuite {
-
   def tests = TestSuite {
     'websocketProxyTests {
       implicit val system = ActorSystem()
@@ -21,12 +26,12 @@ object SimpleSharedSuite extends utest.TestSuite {
       'loggedInUserForwardsMessageToRouter {
         probe.send(websocketProxyServer, LoginUser(User("TestUser")))
         probe.send(websocketProxyServer, testMessage)
-        router.expectMsg(testMessage)
+        router.expectMsg(500 millis, testMessage)
       }
 
       'loggedOutUserDoesNotForwardMessageToRouter {
         probe.send(websocketProxyServer, testMessage)
-        router.expectNoMsg()
+        router.expectNoMsg(500 millis)
       }
     }
   }
