@@ -37,7 +37,6 @@ class WebsocketProxyServer(websocketOut: ActorRef, router: ActorRef) extends Act
 
   def loggedOut: Receive = handlePickling orElse {
     case LoginUser(user: User) =>
-      println("Becomming loggedIn")
       context become loggedIn(user)
   }
 
