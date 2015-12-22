@@ -27,7 +27,6 @@ object WebsocketProxyServer {
   *
   * Receive is a partial function (pattern matching).
   *
-  *
   * @param websocketOut
   * @param router
   */
