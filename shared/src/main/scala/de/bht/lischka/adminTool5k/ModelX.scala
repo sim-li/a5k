@@ -13,6 +13,8 @@ object ModelX {
     def none = User("")
   }
 
+  case class TestWSMessage(description: String) extends WSMessage
+
   case class User(name: String) extends DataModel
 
   case class LoginUser(user: User) extends WSMessage
