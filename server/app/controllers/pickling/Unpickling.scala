@@ -14,15 +14,19 @@ object Unpickling {
 }
 
 class Unpickling extends Actor {
+
   import de.bht.lischka.adminTool5k.ModelX.Picklers._
 
   override def receive: Receive = {
     case rawMessage: String =>
       Unpickle[WSMessage].fromString(rawMessage) match {
         case Success(unpickledMessage: WSMessage) =>
-           sender ! UnpickleResult(unpickledMessage)
-        case Failure(_) =>
-        // @TODO: Handle unpickling failure here!
+          println(s"Sender is ${sender}")
+          sender ! unpickledMessage
+
+        case Failure(ex) =>
+          // @TODO: Handle unpickling failure here!
+          ex.printStackTrace()
       }
   }
 }

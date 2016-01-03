@@ -1,25 +1,24 @@
-package controllers.proxy
+package controllers
 
 import akka.actor.{Actor, ActorRef, Props}
-import controllers.pickling
 import controllers.pickling.PickleSupport
-import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
 import de.bht.lischka.adminTool5k.ModelX
-import de.bht.lischka.adminTool5k.ModelX.WSMessage
-import prickle.{Pickle, Unpickle}
 
-import scala.util.{Failure, Success}
-
-object WebsocketProxyServer {
-  def props(websocketOut: ActorRef, router: ActorRef) = Props(new WebsocketProxyServer(websocketOut, router))
+object Session {
+  def props(websocketOut: ActorRef, router: ActorRef) = Props(new Session(websocketOut, router))
   case class ReceiveMessage(e: String)
 }
 
 /**
-  * Websocket Proxy Server represents a user, it gets instantiated for every
-  * opened Websocket connection.
+  * Session represents a Websocket Connection opened by a client
+  * and changes it's state if a LoginUser message is received.
   *
-  * We will only allow handle requests when a LoginUser method was send.
+  * We will only forward messages with Session (and allow interaction with the server),
+  * if the user is logged in.
+  *
+  * WebsocketProxyServer is started with Akka's Default Actor System,
+  * it follows the application's life-cycle
+  * https://www.playframework.com/documentation/2.0/ScalaAkka
   *
   * http://stackoverflow.com/questions/17383827/how-do-i-best-share-behavior-among-akka-actors
   * https://twitter.github.io/scala_school/pattern-matching-and-functional-composition.html
@@ -30,7 +29,7 @@ object WebsocketProxyServer {
   * @param websocketOut
   * @param router
   */
-class WebsocketProxyServer(websocketOut: ActorRef, router: ActorRef) extends Actor with PickleSupport {
+class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with PickleSupport {
   import ModelX._
 
   override def receive: Receive = loggedOut

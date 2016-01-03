@@ -9,14 +9,18 @@ object PickleSupport {
   case class UnpickleResult(obj: WSMessage)
   case class PickleResult(raw: String)
 }
+
 trait PickleSupport {
   self: Actor =>
-    import PickleSupport._
     val pickling = context.actorOf(Pickling.props)
     val unpickling = context.actorOf(Unpickling.props)
 
+    import PickleSupport._
+
     def handlePickling: Receive = {
-      case ExecutePickle => pickling ! ExecutePickle
-      case ExecuteUnpickle => unpickling ! ExecuteUnpickle
+      case serializedString: String =>
+        println(s"Handling unpickling for ${serializedString}")
+        println(s"Self is ${self}")
+        unpickling ! serializedString
     }
 }

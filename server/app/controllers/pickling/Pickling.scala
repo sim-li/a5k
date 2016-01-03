@@ -13,7 +13,6 @@ object Pickling {
 class Pickling extends Actor {
   import de.bht.lischka.adminTool5k.ModelX.Picklers._
 
-
   override def receive: Receive = {
     case wsMessage: WSMessage => sender ! PickleResult(Pickle.intoString(wsMessage))
   }

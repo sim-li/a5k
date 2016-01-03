@@ -54,7 +54,8 @@ object ModelX {
       concreteType[ExecutionInfo].
       concreteType[IssueInfo].
       concreteType[LoginUser].
-      concreteType[ExecuteCommand]
+      concreteType[ExecuteCommand].
+      concreteType[TestWSMessage]
 
     implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
       concreteType[Stat].

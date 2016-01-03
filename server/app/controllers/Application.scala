@@ -1,6 +1,6 @@
 package controllers
 
-import controllers.proxy.WebsocketProxyServer
+import controllers.Session
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
 import de.bht.lischka.adminTool5k.ModelX
 import de.bht.lischka.adminTool5k.ModelX.{ShellCommand, ExecuteCommand, WSMessage}
@@ -18,6 +18,6 @@ object Application extends Controller {
   def socket = WebSocket.acceptWithActor[String, String] {
       request: RequestHeader =>
         out: ActorRef =>
-           WebsocketProxyServer.props(out, router)
+           Session.props(out, router)
     }
 }
