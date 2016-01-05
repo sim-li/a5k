@@ -21,15 +21,16 @@ object SessionSuite extends utest.TestSuite {
       val websocketOut = TestProbe()
       val router = TestProbe()
       val session = system.actorOf(Session.props(websocketOut.ref, router.ref), "Session")
-      val testMessage = TestWSMessage("Test")
 
       'loggedInUserForwardsMessageToRouter {
+        val testMessage = TestWSMessage("loggedInUserForwardsMessageToRouter")
         probe.send(session, LoginUser(User("TestUser")))
         probe.send(session, testMessage)
         router.expectMsg(500 millis, testMessage)
       }
 
       'loggedOutUserDoesNotForwardMessageToRouter {
+        val testMessage = TestWSMessage("loggedOutUserDoesNotForwardMessageToRouter")
         probe.send(session, testMessage)
         router.expectNoMsg(500 millis)
       }

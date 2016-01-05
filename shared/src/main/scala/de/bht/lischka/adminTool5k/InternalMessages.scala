@@ -14,6 +14,8 @@ import de.bht.lischka.adminTool5k.ModelX.{User, WSMessage}
 object InternalMessages {
   case class SendMessage(msg: WSMessage)
 
+  case class PickledMessageForSending(msg: String)
+
   case class LoggedIn(user: User)
 
   case class LoggedOut(user: User)
