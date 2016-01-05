@@ -4,6 +4,10 @@ import akka.actor.{Props, Actor}
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
 import de.bht.lischka.adminTool5k.ModelX.WSMessage
 
+/**
+  * Naming actor: Actor => with self: Actor overrides sender reference:
+  * http://coding-journal.com/why-is-my-akka-actor-getting-deadletters-as-sender/
+  */
 trait PickleSupport {
   actor: Actor =>
   val pickling = context.actorOf(Pickling.props)

@@ -4,7 +4,7 @@ import akka.testkit.TestProbe
 import controllers.Router
 import controllers.Router.{TestSendNewsToAllReceivers, TestListReceivers, RegisterReceiver}
 import controllers.pickling.{Pickling, Unpickling, PickleSupport}
-import de.bht.lischka.adminTool5k.InternalMessages.PickledMessageForSending
+import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, PickledMessageForSending}
 import de.bht.lischka.adminTool5k.ModelX.{WSMessage, TestWSMessage}
 import prickle.{Unpickle, Pickle}
 import utest._
@@ -32,33 +32,30 @@ object PickleSupportSuite extends utest.TestSuite {
 
       val probe = TestProbe()
       val sessionStub = system.actorOf(SessionStub.props(probe.ref))
+      val unserializedTestMessage: WSMessage = TestWSMessage("testMessage")
+      val serializedTestMessage = Pickle.intoString(unserializedTestMessage)
 
 
       'unpicklingActorSendsResultToSender {
         val unpickling = system.actorOf(Unpickling.props)
-        val testMessage: WSMessage = TestWSMessage("unpicklingActorSendsResultToSender")
-        probe.send(unpickling, Pickle.intoString(testMessage))
-        probe.expectMsg(500 millis, testMessage)
+        probe.send(unpickling, serializedTestMessage)
+        probe.expectMsg(500 millis, unserializedTestMessage)
       }
 
       'picklingActorSendsResultToSender {
-        import de.bht.lischka.adminTool5k.ModelX.Picklers._
         val pickling = system.actorOf(Pickling.props)
-        val testMessage: WSMessage = TestWSMessage("picklingActorSendsResultToSender")
-        probe.send(pickling, testMessage)
-        probe.expectMsg(500 millis, PickledMessageForSending(Pickle.intoString(testMessage)))
-      }
-
-      'forwardWsMessageToSpy {
-        val testMessage: WSMessage = TestWSMessage("forwardWsMessageToSpy")
-        probe.send(sessionStub, testMessage)
-        probe.expectMsg(500 millis, testMessage)
+        probe.send(pickling, unserializedTestMessage)
+        probe.expectMsg(500 millis, PickledMessageForSending(serializedTestMessage))
       }
 
       'unpickleStringAndSendToSelf {
-        val testMessage: WSMessage = TestWSMessage("unpickleStringAndSendToSelf")
-        probe.send(sessionStub, Pickle.intoString(testMessage))
-        probe.expectMsg(500 millis, testMessage)
+        probe.send(sessionStub, serializedTestMessage)
+        probe.expectMsg(500 millis, unserializedTestMessage)
+      }
+
+      'pickleStringAndSendToSelf {
+        probe.send(sessionStub, SendMessage(unserializedTestMessage))
+        probe.expectMsg(500 millis, PickledMessageForSending(serializedTestMessage))
       }
     }
   }

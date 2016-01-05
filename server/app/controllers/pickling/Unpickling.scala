@@ -13,7 +13,6 @@ object Unpickling {
 }
 
 class Unpickling() extends Actor {
-
   import de.bht.lischka.adminTool5k.ModelX.Picklers._
 
   override def receive: Receive = {
