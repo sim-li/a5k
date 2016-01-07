@@ -2,6 +2,7 @@ package controllers
 
 import akka.actor.{Actor, ActorRef, Props}
 import controllers.pickling.PickleSupport
+import de.bht.lischka.adminTool5k.InternalMessages.{PickledMessageForSending, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX
 
 object Session {
@@ -41,6 +42,7 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
 
   def loggedIn(user: User): Receive = handlePickling orElse {
     case wsMessage: WSMessage => router ! wsMessage
+    case PickledMessageForSending(msg: String) => websocketOut ! msg
     case _ => println("Got default case")
   }
 }

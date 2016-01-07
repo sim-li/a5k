@@ -3,6 +3,7 @@ package controllers
 import akka.actor.{Props, ActorSystem}
 import akka.testkit._
 import controllers.Session
+import de.bht.lischka.adminTool5k.InternalMessages.{PickledMessageForSending, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX.{TestWSMessage, LoginUser, User}
 import utest._
 import scala.concurrent.duration._
@@ -33,6 +34,19 @@ object SessionSuite extends utest.TestSuite {
         val testMessage = TestWSMessage("loggedOutUserDoesNotForwardMessageToRouter")
         probe.send(session, testMessage)
         router.expectNoMsg(500 millis)
+      }
+
+      'loggedOutUserDoesNotForwardMessageToWebsocket {
+        val testMessage = PickledMessageForSending("serializedString")
+        probe.send(session, PickledMessageForSending("serializedString"))
+        websocketOut.expectNoMsg(500 millis)
+      }
+
+      'loggedInUserDoesForwardMessageToWebsocket {
+        val testMessage = PickledMessageForSending("serializedString")
+        probe.send(session, LoginUser(User("TestUser")))
+        probe.send(session, testMessage)
+        websocketOut.expectMsg(500 millis, "serializedString")
       }
     }
   }

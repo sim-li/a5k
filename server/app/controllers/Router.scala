@@ -24,6 +24,8 @@ class Router extends Actor {
     case TestSendNewsToAllReceivers(news: Any) =>
       receivers.map(receiver => receiver ! news)
 
+
+
     case wsMessage: WSMessage =>
       wsMessage match {
         case x: ExecuteCommand => println(s"Not implemented: Client, Router receive wsmessage ${x}")
