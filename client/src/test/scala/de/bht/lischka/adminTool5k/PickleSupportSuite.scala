@@ -12,6 +12,37 @@ object PickleSupportSuite extends utest.TestSuite {
 
   import de.bht.lischka.adminTool5k.ModelX.Picklers._
 
+  object TestProbeCli {
+    val testSystem = ActorSystem()
+    var ref: ActorRef = _
+
+
+    def apply() = {
+      ref = testSystem.actorOf(TestProbe.props, s"probe${System.currentTimeMillis}")
+      this
+    }
+
+    def send(receiver: ActorRef, msg: Any) = {
+      println("Send called")
+    }
+
+    def expectMsg(timeout: Duration, msgToExpect: Any): Unit = {
+      println("Expect msg called")
+      assert(true)
+    }
+
+    def props(): Props = Props(new TestProbeCli())
+
+  }
+
+  class TestProbeCli extends Actor {
+    override def receive: Actor.Receive = {
+      case _ => println("Probe received any")
+    }
+  }
+
+  val TestProbe = TestProbeCli
+
   def tests = TestSuite {
     'PickleSupportTests {
       implicit val system = ActorSystem()
@@ -27,36 +58,6 @@ object PickleSupportSuite extends utest.TestSuite {
         }
       }
 
-      object TestProbeCli {
-        val testSystem = ActorSystem()
-        var ref: ActorRef = _
-
-
-        def apply() = {
-          ref = testSystem.actorOf(TestProbe.props, "probe")
-          this
-        }
-
-        def send(receiver: ActorRef, msg: Any) = {
-          println("Send called")
-        }
-
-        def expectMsg(timeout: Duration, msgToExpect: Any): Unit = {
-          println("Expect msg called")
-          assert(true)
-        }
-
-        def props(): Props = Props(new TestProbeCli())
-
-      }
-
-      class TestProbeCli extends Actor {
-        override def receive: Actor.Receive = {
-          case _ => println("Probe received any")
-        }
-      }
-
-      val TestProbe = TestProbeCli
       val probe = TestProbe()
 
       val sessionStub = system.actorOf(SessionStub.props(probe.ref))
