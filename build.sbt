@@ -53,7 +53,9 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
     libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
     "com.lihaoyi" %%% "pprint" % "0.3.6",
-    "com.github.benhutchison" %%% "prickle" % "1.1.9"
+    "com.github.benhutchison" %%% "prickle" % "1.1.9",
+    "com.typesafe.akka" % "akka-testkit_2.11" % "2.3.13",
+    "com.typesafe.akka" % "akka-actor_2.11" % "2.3.13"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )

@@ -1,9 +1,9 @@
 package controllers
 
 import akka.actor.{Actor, ActorRef, Props}
-import controllers.pickling.PickleSupport
 import de.bht.lischka.adminTool5k.InternalMessages.{PickledMessageForSending, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX
+import de.bht.lischka.adminTool5k.pickling.PickleSupport
 
 object Session {
   def props(websocketOut: ActorRef, router: ActorRef) = Props(new Session(websocketOut, router))

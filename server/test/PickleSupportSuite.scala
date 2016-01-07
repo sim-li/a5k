@@ -3,7 +3,7 @@ import akka.actor._
 import akka.testkit.TestProbe
 import controllers.Router
 import controllers.Router.{TestSendNewsToAllReceivers, TestListReceivers, RegisterReceiver}
-import controllers.pickling.{Pickling, Unpickling, PickleSupport}
+import de.bht.lischka.adminTool5k.pickling.{PickleSupport, Pickling, Unpickling}
 import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, PickledMessageForSending}
 import de.bht.lischka.adminTool5k.ModelX.{WSMessage, TestWSMessage}
 import prickle.{Unpickle, Pickle}
@@ -34,7 +34,6 @@ object PickleSupportSuite extends utest.TestSuite {
       val sessionStub = system.actorOf(SessionStub.props(probe.ref))
       val unserializedTestMessage: WSMessage = TestWSMessage("testMessage")
       val serializedTestMessage = Pickle.intoString(unserializedTestMessage)
-
 
       'unpicklingActorSendsResultToSender {
         val unpickling = system.actorOf(Unpickling.props)
