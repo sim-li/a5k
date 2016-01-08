@@ -14,4 +14,6 @@ class TestProbeServer extends AbstractTestProbe {
   override def ref(): ActorRef = probe.ref
 
   override def expectMsg(timeout: FiniteDuration, msg: Any): Unit = probe.expectMsg(timeout, msg)
+
+  override def expectNoMsg(timeout: FiniteDuration): Unit = probe.expectNoMsg(timeout)
 }

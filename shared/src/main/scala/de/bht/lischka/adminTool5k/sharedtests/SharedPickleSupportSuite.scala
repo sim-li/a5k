@@ -6,17 +6,16 @@ import de.bht.lischka.adminTool5k.ModelX.{TestWSMessage, WSMessage}
 import de.bht.lischka.adminTool5k.pickling.{PickleSupport, Pickling, Unpickling}
 import prickle.Pickle
 import utest._
-
 import scala.concurrent.duration._
 
 object SharedPickleSupportSuite {
 
   import de.bht.lischka.adminTool5k.ModelX.Picklers._
-  import scala.concurrent.ExecutionContext.Implicits.global
-  
-  def pickleSupportTests() (implicit probe: AbstractTestProbe) = TestSuite {
+
+  def pickleSupportTests()(implicit testProbe: () => AbstractTestProbe) = TestSuite {
     'PickleSupportTests {
       implicit val system = ActorSystem()
+      val probe = testProbe()
 
       object SessionStub {
         def props(spy: ActorRef): Props = Props(new SessionStub(spy))

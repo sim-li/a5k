@@ -10,5 +10,8 @@ abstract class AbstractTestProbe {
 
   def expectMsg(timeout: FiniteDuration, msg: Any)
 
+  def expectNoMsg(timeout: FiniteDuration)
+
   def ref(): ActorRef
+
 }

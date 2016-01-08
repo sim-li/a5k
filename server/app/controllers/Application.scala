@@ -1,8 +1,7 @@
 package controllers
 
-import controllers.Session
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
-import de.bht.lischka.adminTool5k.ModelX
+import de.bht.lischka.adminTool5k.{Session, ModelX}
 import de.bht.lischka.adminTool5k.ModelX.{ShellCommand, ExecuteCommand, WSMessage}
 import play.api.Play.current
 import akka.actor.{ActorSystem, Actor, Props, ActorRef}
