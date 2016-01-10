@@ -1,5 +1,6 @@
 package de.bht.lischka.adminTool5k
 
+import akka.actor.ActorRef
 import de.bht.lischka.adminTool5k.ModelX.{User, WSMessage}
 
 /**
@@ -16,7 +17,11 @@ object InternalMessages {
 
   case class PickledMessageForSending(msg: String)
 
+  case class UnpickledMessageFromNetwork(msg: WSMessage)
+
   case class LoggedIn(user: User)
 
   case class LoggedOut(user: User)
+
+  case class RegisterListener(actor: ActorRef)
 }

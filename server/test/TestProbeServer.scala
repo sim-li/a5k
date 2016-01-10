@@ -1,7 +1,7 @@
 import akka.actor.{ActorSystem, ActorRef}
 import akka.testkit.TestProbe
 import de.bht.lischka.adminTool5k.sharedtests.AbstractTestProbe
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.{Duration, FiniteDuration}
 import akka.testkit
 
 class TestProbeServer extends AbstractTestProbe {
@@ -16,4 +16,10 @@ class TestProbeServer extends AbstractTestProbe {
   override def expectMsg(timeout: FiniteDuration, msg: Any): Unit = probe.expectMsg(timeout, msg)
 
   override def expectNoMsg(timeout: FiniteDuration): Unit = probe.expectNoMsg(timeout)
+
+  override def ignoreMessage(f: PartialFunction[Any, Boolean]) = probe.ignoreMsg(f)
+
+  // Gotta type that bitch!
+  //  override def within (max: Duration)(f: ⇒ T|)
+
 }

@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k.sharedtests
 
 import akka.actor._
-import de.bht.lischka.adminTool5k.InternalMessages.{PickledMessageForSending, SendMessage}
+import de.bht.lischka.adminTool5k.InternalMessages.{UnpickledMessageFromNetwork, PickledMessageForSending, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX.{TestWSMessage, WSMessage}
 import de.bht.lischka.adminTool5k.pickling.{PickleSupport, Pickling, Unpickling}
 import prickle.Pickle
@@ -29,29 +29,29 @@ object SharedPickleSupportSuite {
       }
 
       val sessionStub = system.actorOf(SessionStub.props(probe.ref()))
-      val unserializedTestMessage: WSMessage = TestWSMessage("testMessage")
-      val serializedTestMessage = Pickle.intoString(unserializedTestMessage)
+      val deserializedMessage: WSMessage = TestWSMessage("testMessage")
+      val serializedMessage = Pickle.intoString(deserializedMessage)
 
       'unpicklingActorSendsResultToSender {
         val unpickling = system.actorOf(Unpickling.props)
-        probe.send(unpickling, serializedTestMessage)
-        probe.expectMsg(500 millis, unserializedTestMessage)
+        probe.send(unpickling, serializedMessage)
+        probe.expectMsg(500 millis, UnpickledMessageFromNetwork(deserializedMessage))
       }
 
       'picklingActorSendsResultToSender {
         val pickling = system.actorOf(Pickling.props)
-        probe.send(pickling, unserializedTestMessage)
-        probe.expectMsg(500 millis, PickledMessageForSending(serializedTestMessage))
+        probe.send(pickling, deserializedMessage)
+        probe.expectMsg(500 millis, PickledMessageForSending(serializedMessage))
       }
 
       'unpickleStringAndSendToSelf {
-        probe.send(sessionStub, serializedTestMessage)
-        probe.expectMsg(500 millis, unserializedTestMessage)
+        probe.send(sessionStub, serializedMessage)
+        probe.expectMsg(500 millis, UnpickledMessageFromNetwork(deserializedMessage))
       }
 
       'pickleStringAndSendToSelf {
-        probe.send(sessionStub, SendMessage(unserializedTestMessage))
-        probe.expectMsg(500 millis, PickledMessageForSending(serializedTestMessage))
+        probe.send(sessionStub, SendMessage(deserializedMessage))
+        probe.expectMsg(500 millis, PickledMessageForSending(serializedMessage))
       }
     }
   }

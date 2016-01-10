@@ -12,10 +12,11 @@ import scala.concurrent.duration.{FiniteDuration, Duration}
 object TestProbeClient extends AbstractTestProbe {
   val testSystem = ActorSystem()
   var ref: ActorRef = _
-
+  var numberOfProbes = 0
 
   def apply() = {
-    ref = testSystem.actorOf(TestProbeClient.props, s"probe${System.currentTimeMillis}")
+    numberOfProbes += 1
+    ref = testSystem.actorOf(TestProbeClient.props, s"probe${System.currentTimeMillis}+${numberOfProbes}")
     this
   }
 
@@ -25,6 +26,11 @@ object TestProbeClient extends AbstractTestProbe {
 
   def expectMsg(timeout: FiniteDuration, msgToExpect: Any): Unit = {
     println("Expect msg called")
+    assert(true)
+  }
+
+  def expectNoMsg(timeout: FiniteDuration): Unit = {
+    println("Expect no msg called")
     assert(true)
   }
 

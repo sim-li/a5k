@@ -1,9 +1,8 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Props, Actor, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.LoggedIn
-import de.bht.lischka.adminTool5k.ModelX.User
-import de.bht.lischka.adminTool5k.Router.RegisterUiComponent
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, LoggedIn}
+import de.bht.lischka.adminTool5k.ModelX.{LoginUser, User}
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object LoginScreen {
@@ -13,7 +12,7 @@ object LoginScreen {
 class LoginScreen(router: ActorRef) extends Actor {
   override def preStart: Unit = {
     registerCallback()
-    router ! RegisterUiComponent(self)
+    router ! RegisterListener(self)
   }
 
   def registerCallback() = {
@@ -23,14 +22,14 @@ class LoginScreen(router: ActorRef) extends Actor {
         def userName = loginTextfield.value.toString()
         def validUsername = userName.length() > 0
         if (validUsername) {
-          self ! LoggedIn(User(userName))
+          self ! LoginUser(User(userName))
         }
     }
   }
 
   override def receive: Receive = {
-    case LoggedIn(user: User) =>
+    case LoginUser(user: User) =>
       jQ("#login_container").hide()
-      router ! LoggedIn(user)
+      router ! LoginUser(user)
   }
 }

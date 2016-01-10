@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, ActorRef, Props}
-import de.bht.lischka.adminTool5k.InternalMessages.PickledMessageForSending
+import de.bht.lischka.adminTool5k.InternalMessages.{UnpickledMessageFromNetwork, RegisterListener, PickledMessageForSending}
 import de.bht.lischka.adminTool5k.pickling.PickleSupport
 
 object Session {
@@ -32,17 +32,29 @@ object Session {
 class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with PickleSupport {
   import ModelX._
 
+  override def preStart = {
+    router ! RegisterListener(self)
+  }
+
   override def receive: Receive = loggedOut
 
   def loggedOut: Receive = handlePickling orElse {
-    case LoginUser(user: User) =>
-      context become loggedIn(user)
+    case LoginUser(user: User) => context become loggedIn(user)
+    case _ =>
   }
 
   def loggedIn(user: User): Receive = handlePickling orElse {
-    case wsMessage: WSMessage => router ! wsMessage
+    /**
+      * Picklesupport reacts on raw string or SendMessage()
+      */
+
+    // Message-Inbound from PickleSupport
+    case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => router ! wsMessage
+
+    // Message-Outbound from PickleSupport
     case PickledMessageForSending(msg: String) => websocketOut ! msg
-    case _ => println("Got default case")
+
+    case _ =>
   }
 }
 

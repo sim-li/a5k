@@ -1,15 +1,11 @@
-/***
-  *                  _           _    _______          _  ___   ___   ___   ___
-  *         /\      | |         (_)  |__   __|        | |/ _ \ / _ \ / _ \ / _ \
-  *        /  \   __| |_ __ ___  _ _ __ | | ___   ___ | | (_) | | | | | | | | | |
-  *       / /\ \ / _` | '_ ` _ \| | '_ \| |/ _ \ / _ \| |\__, | | | | | | | | | |
-  *      / ____ \ (_| | | | | | | | | | | | (_) | (_) | |  / /| |_| | |_| | |_| |
-  *     /_/    \_\__,_|_| |_| |_|_|_| |_|_|\___/ \___/|_| /_/  \___/ \___/ \___/
-  *                B.A. THESIS SIMON LISCHKA, reactive as hell.
-  *              Beuth University of Applied Sciencies, 2015/2016
-  *
-  */
+import org.scalajs.core.tools.classpath.CompleteClasspath
+import org.scalajs.core.tools.corelib.CoreJSLibs
+import org.scalajs.core.tools.io.{VirtualJSFile, MemVirtualJSFile}
+import org.scalajs.jsenv.{JSEnv, JSConsole}
+import org.scalajs.core.tools.logging.Logger
 import sbt.Project.projectToRef
+import org.scalajs.core.ir.Utils._
+
 lazy val scalaV = "2.11.7"
 
 lazy val server = (project in file("server")).settings(
@@ -21,6 +17,7 @@ lazy val server = (project in file("server")).settings(
     "com.lihaoyi" %% "utest" % "0.3.1" % "test",
     "com.github.benhutchison" %% "prickle" % "1.1.9",
     "com.vmunier" % "play-scalajs-sourcemaps_2.11" % "0.1.0",
+    "com.vmunier" %% "play-scalajs-scripts" % "0.3.0",
     "com.typesafe.akka" % "akka-testkit_2.11" % "2.3.13"
 ),
   testFrameworks += new TestFramework("utest.runner.Framework")
@@ -58,11 +55,37 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
     "com.typesafe.akka" % "akka-actor_2.11" % "2.3.13"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
-  )
-
+  ).jsConfigure(_ enablePlugins ScalaJSPlay)
 
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
 // loads the Play project at sbt startup
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
+
+/** Run a class in a given environment using a given launcher */
+def jsRun(env: JSEnv, cp: CompleteClasspath, mainCl: String,
+          launcher: VirtualJSFile, jsConsole: JSConsole, log: Logger) = {
+
+  log.info("Running " + mainCl)
+  log.debug(s"with JSEnv of type ${env.getClass()}")
+  log.debug(s"with classpath of type ${cp.getClass}")
+  // Actually run code
+  env.jsRunner(cp, launcher, log, jsConsole).run()
+}
+
+def launcherContent(mainCl: String) = {
+  val parts = mainCl.split('.').map(s => s"""["${escapeJS(s)}"]""").mkString
+  s"${CoreJSLibs.jsGlobalExpr}$parts().main();\n"
+}
+
+def memLauncher(mainCl: String) = {
+  new MemVirtualJSFile("Generated launcher file")
+    .withContent(launcherContent(mainCl))
+}
+
+//test in Test := {
+//  val mainClass = "path.to.AnotherClassWithTests"
+//  jsRun((jsEnv in Test).value, (scalaJSExecClasspath in Test).value, mainClass,
+//    memLauncher(mainClass), (scalaJSConsole in Test).value, streams.value.log)
+//}

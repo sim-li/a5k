@@ -1,21 +1,13 @@
-import de.bht.lischka.adminTool5k.sharedtests.{SharedSessionSuite, AbstractTestProbe, SharedPickleSupportSuite}
-import utest.DefaultFormatter
-import utest._
-import utest.framework.Test
-import utest.util.Tree
-import scala.collection.mutable.ArrayBuffer
+import de.bht.lischka.adminTool5k.sharedtests.{CustomTestRunner, SharedSessionSuite, AbstractTestProbe, SharedPickleSupportSuite}
 import SharedPickleSupportSuite._
 import SharedSessionSuite._
 
-object SharedActorBasedTestSuite extends utest.TestSuite {
-  println("Result of pickle support tests (Server)")
+object SharedActorBasedTestSuite extends utest.TestSuite with CustomTestRunner {
 
-  implicit def testProbe(): AbstractTestProbe = {
-    new TestProbeServer()
-  }
+  implicit def testProbe(): AbstractTestProbe = new TestProbeServer()
 
-  val tests = {
-    pickleSupportTests()
-    sessionTests()
-  }
+  runVariousTests("Shared Actor Based Tests [Server]") (
+    pickleSupportTests,
+    sessionTests
+  )
 }

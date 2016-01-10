@@ -3,6 +3,7 @@ package controllers
 import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.testkit._
 import controllers.Router._
+import de.bht.lischka.adminTool5k.InternalMessages.RegisterListener
 import de.bht.lischka.adminTool5k.ModelX.{TestWSMessage, LoginUser, User}
 import de.bht.lischka.adminTool5k.Session
 import utest._
@@ -24,7 +25,7 @@ object RouterSuite extends utest.TestSuite {
       case object News
 
       'routerRegistersReceiver {
-        session.send(router, RegisterReceiver(session.ref))
+        session.send(router, RegisterListener(session.ref))
         session.send(router, TestListReceivers)
         session.expectMsg(500 millis, List(session.ref))
       }
@@ -40,7 +41,7 @@ object RouterSuite extends utest.TestSuite {
 
       def registerProbesAsReceivers(receivers: TestProbe*) = {
         receivers.map(receiver =>
-          session.send(router, RegisterReceiver(receiver.ref))
+          session.send(router, RegisterListener(receiver.ref))
         )
       }
 

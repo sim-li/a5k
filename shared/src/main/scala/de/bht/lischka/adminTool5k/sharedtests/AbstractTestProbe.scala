@@ -12,6 +12,8 @@ abstract class AbstractTestProbe {
 
   def expectNoMsg(timeout: FiniteDuration)
 
+  def ignoreMessage(f: PartialFunction[Any, Boolean])
+
   def ref(): ActorRef
 
 }

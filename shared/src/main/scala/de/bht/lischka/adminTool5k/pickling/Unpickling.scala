@@ -2,7 +2,7 @@ package de.bht.lischka.adminTool5k.pickling
 
 import akka.actor.{ActorRef, Props, Actor}
 import de.bht.lischka.adminTool5k.pickling
-import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
+import de.bht.lischka.adminTool5k.InternalMessages.{UnpickledMessageFromNetwork, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX.WSMessage
 import prickle.{Pickle, Unpickle}
 
@@ -19,8 +19,7 @@ class Unpickling() extends Actor {
     case rawMessage: String =>
       Unpickle[WSMessage].fromString(rawMessage) match {
         case Success(unpickledMessage: WSMessage) =>
-          sender ! unpickledMessage
-
+          sender ! UnpickledMessageFromNetwork(unpickledMessage)
         case Failure(ex) =>
           ex.printStackTrace()
       }

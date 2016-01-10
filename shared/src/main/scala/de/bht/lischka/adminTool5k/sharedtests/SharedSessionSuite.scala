@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k.sharedtests
 
 import akka.actor.ActorSystem
-import de.bht.lischka.adminTool5k.InternalMessages.PickledMessageForSending
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, PickledMessageForSending}
 import de.bht.lischka.adminTool5k.ModelX.{LoginUser, TestWSMessage, User}
 import de.bht.lischka.adminTool5k.Session
 import utest._
@@ -22,13 +22,13 @@ object SharedSessionSuite {
       val websocketOut = testProbe()
       val router = testProbe()
       val probe = testProbe()
-
       val session = system.actorOf(Session.props(websocketOut.ref, router.ref), "Session")
 
       'loggedInUserForwardsMessageToRouter {
         val testMessage = TestWSMessage("loggedInUserForwardsMessageToRouter")
         probe.send(session, LoginUser(User("TestUser")))
         probe.send(session, testMessage)
+        router.ignoreMessage { case RegisterListener => true }
         router.expectMsg(500 millis, testMessage)
       }
 

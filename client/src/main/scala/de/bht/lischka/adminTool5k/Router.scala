@@ -1,19 +1,14 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, Props, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.{LoggedIn, LoggedOut, SendMessage}
-import de.bht.lischka.adminTool5k.ModelX.{User, ShellCommand, ExecuteCommand, WSMessage}
-import de.bht.lischka.adminTool5k.Router.RegisterUiComponent
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, LoggedIn, LoggedOut, SendMessage}
+import de.bht.lischka.adminTool5k.ModelX._
 
 object Router {
   def props = Props(new Router())
-
-  case class RegisterUiComponent(actor: ActorRef)
 }
 
-class Router() extends Actor {
-  val proxy = context.actorOf(Props(classOf[WebsocketProxyClient]), "websocketProxyClient")
-
+class Router extends Actor {
   var uiComponents = List[ActorRef]()
 
   def forwardToAll(message: Any) = {
@@ -21,13 +16,15 @@ class Router() extends Actor {
   }
 
   override def receive: Actor.Receive = {
-    case RegisterUiComponent(actor: ActorRef) =>
+    case RegisterListener(actor: ActorRef) =>
       uiComponents = actor :: uiComponents
 
-    case sendMsg: SendMessage => proxy ! sendMsg
+    /**
+      * The Session will send out every message wrapped in SendMessage.
+      *
+      */
+    case LoginUser(user: User) => forwardToAll(LoginUser(user))
 
-    case LoggedIn(user: User) => forwardToAll(LoggedIn(user))
-
-    case LoggedOut(user: User) => forwardToAll(LoggedOut(user))
+    case wsMessage: WSMessage => forwardToAll(SendMessage(wsMessage))
   }
 }

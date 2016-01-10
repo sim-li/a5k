@@ -1,15 +1,14 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, Props, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
-import de.bht.lischka.adminTool5k.WebsocketProxyClient._
+import de.bht.lischka.adminTool5k.InternalMessages.{PickledMessageForSending, SendMessage}
 import org.scalajs.dom
 import org.scalajs.dom._
 import prickle.{Pickle, Unpickle}
 import scala.util.{Failure, Success}
 
 object WebsocketProxyClient {
-  def props: Props = Props(new WebsocketProxyClient())
+  def props = Props(new WebsocketProxyClient())
 
   case class ConnectionEstablished(socket: dom.WebSocket)
 
@@ -20,10 +19,11 @@ object WebsocketProxyClient {
   case class ReceiveMessage(e: MessageEvent)
 }
 
-class WebsocketProxyClient() extends Actor {
+class WebsocketProxyClient extends Actor {
   import context._
   import de.bht.lischka.adminTool5k.ModelX._
   import de.bht.lischka.adminTool5k.ModelX.Picklers._
+  import de.bht.lischka.adminTool5k.WebsocketProxyClient._
 
   override def preStart = {
     registerCallbacks()
@@ -53,24 +53,14 @@ class WebsocketProxyClient() extends Actor {
   }
 
   def connected(socket: dom.WebSocket): Receive = {
-    case ReceiveMessage(messageEvent: MessageEvent) =>
-      unpickleStrAndForward(messageEvent.data.toString(), context.parent)
+    case ReceiveMessage(messageEvent: MessageEvent) => context.parent ! messageEvent.data.toString()
 
-    case SendMessage(x) =>
-      socket.send(Pickle.intoString(x))
+    case PickledMessageForSending(msg: String) => socket.send(msg)
 
     case ConnectionClosed => become(closed)
 
     case Error(e: Event) => println("Error [Client]")
 
     case d => println(s"Default case [Client] with ${d}")
-  }
-
-  def unpickleStrAndForward(str: String, forwardingRef: ActorRef) = {
-    Unpickle[WSMessage].fromString(str) match {
-      case Success(m: WSMessage) =>
-        forwardingRef ! m
-      case Failure(_) =>
-    }
   }
 }

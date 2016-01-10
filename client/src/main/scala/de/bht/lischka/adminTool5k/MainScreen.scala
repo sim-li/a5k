@@ -2,9 +2,8 @@ package de.bht.lischka.adminTool5k
 
 import java.util.Date
 import akka.actor.{Props, Actor, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, LoggedIn, LoggedOut}
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage, LoggedIn, LoggedOut}
 import de.bht.lischka.adminTool5k.ModelX.{ExecuteCommand, ShellCommand, User, IssueInfo}
-import de.bht.lischka.adminTool5k.Router.RegisterUiComponent
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
@@ -16,7 +15,7 @@ class MainScreen(router: ActorRef) extends Actor {
 
   override def preStart: Unit = {
     registerCallback()
-    router ! RegisterUiComponent(self)
+    router ! RegisterListener(self)
   }
 
   def registerCallback() = {
