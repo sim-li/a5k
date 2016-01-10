@@ -28,13 +28,15 @@ object SharedSessionSuite {
         val testMessage = TestWSMessage("loggedInUserForwardsMessageToRouter")
         probe.send(session, LoginUser(User("TestUser")))
         probe.send(session, testMessage)
-        router.ignoreMessage { case RegisterListener => true }
+//        router.ignoreMessage { case RegisterListener => true }
+        router.expectMsg(500 millis, RegisterListener)
         router.expectMsg(500 millis, testMessage)
       }
 
       'loggedOutUserDoesNotForwardMessageToRouter {
         val testMessage = TestWSMessage("loggedOutUserDoesNotForwardMessageToRouter")
         probe.send(session, testMessage)
+        router.expectMsg(500 millis, RegisterListener)
         router.expectNoMsg(500 millis)
       }
 
