@@ -24,7 +24,6 @@ object SharedSessionSuite {
       val router = TestProbe()
       router.ignoreMsg { case RegisterListener(_) => true }
       val probe = TestProbe()
-      val manualFilterToRouter = system.actorOf(ManualFilter.props(router.ref))
       val session = system.actorOf(Session.props(websocketOut.ref, router.ref), "Session")
 
 
