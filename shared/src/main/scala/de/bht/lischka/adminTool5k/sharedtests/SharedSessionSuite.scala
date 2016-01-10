@@ -18,29 +18,14 @@ import scala.concurrent.duration._
 
 object SharedSessionSuite {
   def sessionTests()(implicit testProbe: () => AbstractTestProbe) = TestSuite {
-    object ManualFilter {
-      def props(target: ActorRef) = Props(new ManualFilter(target))
-    }
-
-    class ManualFilter(target: ActorRef) extends Actor {
-      def receive = {
-        case RegisterListener(x) =>
-        case otherMsg =>
-          target ! otherMsg
-      }
-    }
-
     'sessionTests {
       implicit val system = ActorSystem()
       val websocketOut = TestProbe()
       val router = TestProbe()
-      /**
-        * Does not seem to ignore msg properly
-        */
-      router.ignoreMsg { case RegisterListener => true }
+      router.ignoreMsg { case RegisterListener(_) => true }
       val probe = TestProbe()
       val manualFilterToRouter = system.actorOf(ManualFilter.props(router.ref))
-      val session = system.actorOf(Session.props(websocketOut.ref, manualFilterToRouter), "Session")
+      val session = system.actorOf(Session.props(websocketOut.ref, router.ref), "Session")
 
 
       'loggedInUserForwardsMessageToRouter {
