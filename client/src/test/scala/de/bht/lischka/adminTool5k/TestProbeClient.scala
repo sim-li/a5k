@@ -21,16 +21,13 @@ object TestProbeClient extends AbstractTestProbe {
   }
 
   def send(receiver: ActorRef, msg: Any) = {
-    println("Send called")
   }
 
   def expectMsg(timeout: FiniteDuration, msgToExpect: Any): Unit = {
-    println("Expect msg called")
     assert(true)
   }
 
   def expectNoMsg(timeout: FiniteDuration): Unit = {
-    println("Expect no msg called")
     assert(true)
   }
 

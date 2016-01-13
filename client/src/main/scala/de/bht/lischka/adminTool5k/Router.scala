@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, Props, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, LoggedIn, LoggedOut, SendMessage}
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 
 object Router {
@@ -23,7 +23,9 @@ class Router extends Actor {
       * The Session will send out every message wrapped in SendMessage.
       *
       */
-    case LoginUser(user: User) => forwardToAll(LoginUser(user))
+    case LoginUser(user: User) =>
+      println("Got login message in router and forwarding to all registered")
+      forwardToAll(LoginUser(user))
 
     case wsMessage: WSMessage => forwardToAll(SendMessage(wsMessage))
   }

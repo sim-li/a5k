@@ -17,9 +17,6 @@ class TestProbeServer extends AbstractTestProbe {
 
   override def expectNoMsg(timeout: FiniteDuration): Unit = probe.expectNoMsg(timeout)
 
-  override def ignoreMessage(f: PartialFunction[Any, Boolean]) = probe.ignoreMsg(f)
-
-  // Gotta type that bitch!
-  //  override def within (max: Duration)(f: ⇒ T|)
+  def ignoreMessage(f: PartialFunction[Any, Boolean]) = probe.ignoreMsg(f)
 
 }

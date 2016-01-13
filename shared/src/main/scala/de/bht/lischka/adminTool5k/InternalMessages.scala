@@ -19,9 +19,5 @@ object InternalMessages {
 
   case class UnpickledMessageFromNetwork(msg: WSMessage)
 
-  case class LoggedIn(user: User)
-
-  case class LoggedOut(user: User)
-
   case class RegisterListener(actor: ActorRef)
 }

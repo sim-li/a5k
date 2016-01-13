@@ -1,0 +1,9 @@
+Session is started with Akka's Default Actor System,
+it follows the application's life-cycle
+https://www.playframework.com/documentation/2.0/ScalaAkka
+
+http://stackoverflow.com/questions/17383827/how-do-i-best-share-behavior-among-akka-actors
+https://twitter.github.io/scala_school/pattern-matching-and-functional-composition.html
+http://www.scala-lang.org/api/2.10.3/index.html#scala.PartialFunction
+
+Receive is a partial function (pattern matching).

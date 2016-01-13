@@ -1,27 +1,29 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Props, Actor, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, LoggedIn}
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener}
 import de.bht.lischka.adminTool5k.ModelX.{LoginUser, User}
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object LoginScreen {
-  def props(router: ActorRef) = Props(new LoginScreen(router))
+  def props(session: ActorRef) = Props(new LoginScreen(session))
 }
 
-class LoginScreen(router: ActorRef) extends Actor {
+class LoginScreen(session: ActorRef) extends Actor {
   override def preStart: Unit = {
     registerCallback()
-    router ! RegisterListener(self)
+    session ! RegisterListener(self)
   }
 
   def registerCallback() = {
     jQ("#login_button") click {
       (event: JQueryEventObject) =>
+        println("Click on login button")
         val loginTextfield = jQ("#login_textfield")
         def userName = loginTextfield.value.toString()
         def validUsername = userName.length() > 0
         if (validUsername) {
+          println(s"Forwarding to router LoginMessage for user $userName")
           self ! LoginUser(User(userName))
         }
     }
@@ -30,6 +32,7 @@ class LoginScreen(router: ActorRef) extends Actor {
   override def receive: Receive = {
     case LoginUser(user: User) =>
       jQ("#login_container").hide()
-      router ! LoginUser(user)
+      session ! LoginUser(user)
+      println(s"Sent to session LoginMessage for user $user")
   }
 }

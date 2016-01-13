@@ -2,8 +2,8 @@ package de.bht.lischka.adminTool5k
 
 import java.util.Date
 import akka.actor.{Props, Actor, ActorRef}
-import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage, LoggedIn, LoggedOut}
-import de.bht.lischka.adminTool5k.ModelX.{ExecuteCommand, ShellCommand, User, IssueInfo}
+import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
+import de.bht.lischka.adminTool5k.ModelX._
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
@@ -30,8 +30,9 @@ class MainScreen(router: ActorRef) extends Actor {
   }
 
   def loggedOut: Receive = {
-    case LoggedIn(user: User) =>
+    case LoginUser(user: User) =>
       context.become(loggedIn)
+      println("Main screen becomming logged in")
       jQ("#main_container").show()
   }
 

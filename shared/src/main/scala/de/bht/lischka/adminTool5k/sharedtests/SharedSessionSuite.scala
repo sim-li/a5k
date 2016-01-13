@@ -22,7 +22,7 @@ object SharedSessionSuite {
       implicit val system = ActorSystem()
       val websocketOut = TestProbe()
       val router = TestProbe()
-      router.ignoreMsg { case RegisterListener(_) => true }
+      //router.ignoreMsg { case RegisterListener(_) => true }
       val probe = TestProbe()
       val session = system.actorOf(Session.props(websocketOut.ref, router.ref), "Session")
 
