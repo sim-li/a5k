@@ -1,6 +1,6 @@
 package de.bht.lischka.adminTool5k
 
-import java.util.Date
+import java.util.{UUID, Date}
 import prickle.{CompositePickler, PicklerPair}
 
 object ModelX {
@@ -25,7 +25,7 @@ object ModelX {
 
   case class ExecutionInfo(response: String, commandExecuted: Date, success: Boolean) extends DataModel
 
-  case class IssueInfo(user: User, commandIssued: Date) extends DataModel
+  case class IssueInfo(user: User, commandId: UUID, commandIssued: Date) extends DataModel
 
   trait Stat extends DataModel
 

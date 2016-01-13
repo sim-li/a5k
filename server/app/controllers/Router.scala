@@ -3,7 +3,7 @@ package controllers
 import akka.actor.{Actor, Props, ActorRef}
 import controllers.Router.{TestSendNewsToAllReceivers, TestListReceivers}
 import de.bht.lischka.adminTool5k.InternalMessages.RegisterListener
-import de.bht.lischka.adminTool5k.ModelX.{ExecuteCommand, WSMessage}
+import de.bht.lischka.adminTool5k.ModelX.{LoginUser, ExecuteCommand, WSMessage}
 
 object Router {
   def props = Props(new Router())

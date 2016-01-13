@@ -42,6 +42,7 @@ class WebsocketProxyClient extends Actor {
 
   def disconnected: Receive = {
     case ConnectionEstablished(socket: dom.WebSocket) => context.become(connected(socket))
+    case other => println(s"Received message ${other} while disconnected")
   }
 
   def closed: Receive = {
@@ -55,7 +56,9 @@ class WebsocketProxyClient extends Actor {
   def connected(socket: dom.WebSocket): Receive = {
     case ReceiveMessage(messageEvent: MessageEvent) => context.parent ! messageEvent.data.toString()
 
-    case PickledMessageForSending(msg: String) => socket.send(msg)
+    case PickledMessageForSending(msg: String) =>
+      socket.send(msg)
+      println(s"And sending ${msg} out (proxy)")
 
     case ConnectionClosed => become(closed)
 

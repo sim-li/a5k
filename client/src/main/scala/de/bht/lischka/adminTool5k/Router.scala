@@ -27,6 +27,7 @@ class Router extends Actor {
       println("Got login message in router and forwarding to all registered")
       forwardToAll(LoginUser(user))
 
+    case sendMessage: SendMessage => forwardToAll(sendMessage)
     case wsMessage: WSMessage => forwardToAll(SendMessage(wsMessage))
   }
 }

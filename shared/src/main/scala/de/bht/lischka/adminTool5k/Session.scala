@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, ActorRef, Props}
-import de.bht.lischka.adminTool5k.InternalMessages.{UnpickledMessageFromNetwork, RegisterListener, PickledMessageForSending}
+import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, UnpickledMessageFromNetwork, RegisterListener, PickledMessageForSending}
 import de.bht.lischka.adminTool5k.pickling.PickleSupport
 
 object Session {
@@ -30,10 +30,13 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
   def loggedIn(user: User): Receive = handlePickling orElse {
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => router ! wsMessage
 
-    case PickledMessageForSending(msg: String) => websocketOut ! msg
+    case PickledMessageForSending(msg: String) =>
+      println(s"Session sending out $msg to websocket")
+      websocketOut ! PickledMessageForSending(msg)
 
     case LoginUser(user) =>
-      println("Forwarded login user message from Session to router")
+      println("Forwarded login user message from Session to router + overWebScoket")
       router ! LoginUser(user)
+      self ! SendMessage(LoginUser(user))
   }
 }
