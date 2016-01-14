@@ -9,25 +9,27 @@ object Router {
 }
 
 class Router extends Actor {
-  var uiComponents = List[ActorRef]()
+  var registeredReceivers = List[ActorRef]()
 
-  def forwardToAll(message: Any) = {
-    uiComponents.filter(recipient => recipient != sender).foreach(component => component ! message)
+  def forwardMsgToAll(message: Any) = {
+    forwardMsgToAllBut(message, sender)
+  }
+
+  def forwardMsgToAllBut(message: Any, ignoredRecipient: ActorRef) = {
+    registeredReceivers.filter(p => p != ignoredRecipient).foreach(component => component ! message)
   }
 
   override def receive: Actor.Receive = {
     case RegisterListener(actor: ActorRef) =>
-      uiComponents = actor :: uiComponents
+      registeredReceivers = actor :: registeredReceivers
 
-    /**
-      * The Session will send out every message wrapped in SendMessage.
-      *
-      */
     case LoginUser(user: User) =>
-      println("Got login message in router and forwarding to all registered")
-      forwardToAll(LoginUser(user))
+      val session = sender()
+      session ! SendMessage(LoginUser(user))
+      forwardMsgToAll(LoginUser(user))
 
-    case sendMessage: SendMessage => forwardToAll(sendMessage)
-    case wsMessage: WSMessage => forwardToAll(SendMessage(wsMessage))
+    case sendMessage: SendMessage => forwardMsgToAll(sendMessage)
+    case wsMessage: WSMessage => forwardMsgToAll(SendMessage(wsMessage))
+
   }
 }

@@ -19,24 +19,25 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
   override def receive: Receive = loggedOut
 
   def loggedOut: Receive = handlePickling orElse {
-    case LoginUser(user: User) =>
-      println("Got Loginuser message in Session")
+    case LoginUser(user) =>
       context become loggedIn(user)
-      self ! LoginUser(user)
+      router ! LoginUser(user)
 
-    case _ =>
+
+    case UnpickledMessageFromNetwork(wsMessage: WSMessage ) =>
+      wsMessage match {
+        case LoginUser(user: User) => self ! LoginUser(user)
+
+        case anyMsg => println(s"Got ${anyMsg} in logged out state")
+      }
   }
 
   def loggedIn(user: User): Receive = handlePickling orElse {
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => router ! wsMessage
 
     case PickledMessageForSending(msg: String) =>
-      println(s"Session sending out $msg to websocket")
       websocketOut ! PickledMessageForSending(msg)
 
-    case LoginUser(user) =>
-      println("Forwarded login user message from Session to router + overWebScoket")
-      router ! LoginUser(user)
-      self ! SendMessage(LoginUser(user))
+    case anyMsg => println(s"Got ${anyMsg} in logged out state")
   }
 }
