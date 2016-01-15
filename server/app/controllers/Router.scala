@@ -4,6 +4,7 @@ import akka.actor.{Actor, Props, ActorRef}
 import controllers.Router.{TestSendNewsToAllReceivers, TestListReceivers}
 import de.bht.lischka.adminTool5k.InternalMessages.RegisterListener
 import de.bht.lischka.adminTool5k.ModelX.{LoginUser, ExecuteCommand, WSMessage}
+import sys.process._
 
 object Router {
   def props = Props(new Router())
@@ -26,7 +27,11 @@ class Router extends Actor {
 
     case wsMessage: WSMessage =>
       wsMessage match {
-        case x: ExecuteCommand => println(s"Not implemented: Server, Router receive wsmessage ${x}")
+        case ExecuteCommand(shellCommand) =>
+          val cmd: String = shellCommand.command
+          val commandResult = cmd.!!
+          println(s"Command result is ${commandResult}")
+
         case anything => println(s"Triggered default case in Router, got ${anything}")
       }
   }

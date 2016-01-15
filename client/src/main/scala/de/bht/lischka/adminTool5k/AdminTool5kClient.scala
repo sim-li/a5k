@@ -22,7 +22,7 @@ class Application extends Actor {
   val websocketProxy = context.actorOf(WebsocketProxyClient.props, "wsproxy")
   val session = context.actorOf(Session.props(websocketProxy, router), "session")
   val loginScreen = context.actorOf(LoginScreen.props(session), "loginScreen")
-  val mainScreen = context.actorOf(MainScreen.props(router), "mainScreen")
+  val mainScreen = context.actorOf(MainScreen.props(router, session), "mainScreen")
 
   override def receive: Receive = {
     case anyMessage => session ! anyMessage

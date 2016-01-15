@@ -2,11 +2,12 @@ package de.bht.lischka.adminTool5k
 
 import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, UnpickledMessageFromNetwork, RegisterListener, PickledMessageForSending}
+import de.bht.lischka.adminTool5k.Session.GetUser
 import de.bht.lischka.adminTool5k.pickling.PickleSupport
 
 object Session {
   def props(websocketOut: ActorRef, router: ActorRef) = Props(new Session(websocketOut, router))
-  case class ReceiveMessage(e: String)
+  case object GetUser
 }
 
 class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with PickleSupport {
@@ -26,7 +27,9 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
 
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) =>
       wsMessage match {
-        case LoginUser(user: User) => self ! LoginUser(user)
+        case LoginUser(user: User) =>
+          self ! LoginUser(user)
+          println("Session became logged in")
 
         case anyMsg => println(s"Got ${anyMsg} in logged out state")
       }
@@ -37,6 +40,8 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
 
     case PickledMessageForSending(msg: String) =>
       websocketOut ! PickledMessageForSending(msg)
+
+    case GetUser => sender ! user
 
     case anyMsg => println(s"Got ${anyMsg} in logged out state")
   }

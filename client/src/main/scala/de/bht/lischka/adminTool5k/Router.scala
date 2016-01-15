@@ -11,25 +11,35 @@ object Router {
 class Router extends Actor {
   var registeredReceivers = List[ActorRef]()
 
-  def forwardMsgToAll(message: Any) = {
-    forwardMsgToAllBut(message, sender)
-  }
+    def forwardMsg(message: Any) = {
+      val ignoredReceiver = sender()
+      registeredReceivers.filter(receiver => receiver != ignoredReceiver).
+        foreach((receiver: ActorRef)  => receiver ! message)
+    }
 
-  def forwardMsgToAllBut(message: Any, ignoredRecipient: ActorRef) = {
-    registeredReceivers.filter(p => p != ignoredRecipient).foreach(component => component ! message)
+  def printAllReceivers() = {
+    println(registeredReceivers.foreach((x: ActorRef)  =>
+      println(s"Receiver ${x.path} is registered"))
+    )
   }
 
   override def receive: Actor.Receive = {
+
     case RegisterListener(actor: ActorRef) =>
       registeredReceivers = actor :: registeredReceivers
 
     case LoginUser(user: User) =>
       val session = sender()
       session ! SendMessage(LoginUser(user))
-      forwardMsgToAll(LoginUser(user))
+      printAllReceivers()
+      val res = forwardMsg(LoginUser(user))
+      println(s"FWMToall call return res ${res}")
+      println("Forward msg to all call is theoretically terminated")
 
-    case sendMessage: SendMessage => forwardMsgToAll(sendMessage)
-    case wsMessage: WSMessage => forwardMsgToAll(SendMessage(wsMessage))
+    case sendMessage: SendMessage => forwardMsg(sendMessage)
+
+    case wsMessage: WSMessage => forwardMsg(SendMessage(wsMessage))
 
   }
+
 }
