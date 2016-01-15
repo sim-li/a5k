@@ -32,8 +32,6 @@ class Router extends Actor {
       session ! SendMessage(LoginUser(user))
       printAllReceivers()
       val res = forwardMsg(LoginUser(user))
-      println(s"FWMToall call return res ${res}")
-      println("Forward msg to all call is theoretically terminated")
 
     case sendMessage: SendMessage => forwardMsg(sendMessage)
 
