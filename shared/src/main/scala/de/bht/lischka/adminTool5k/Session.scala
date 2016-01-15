@@ -39,7 +39,8 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => router ! wsMessage
 
     case PickledMessageForSending(msg: String) =>
-      websocketOut ! PickledMessageForSending(msg)
+      println(s"Sending ${msg} over the line")
+      websocketOut ! msg
 
     case GetUser => sender ! user
 

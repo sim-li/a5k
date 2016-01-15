@@ -52,7 +52,34 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
     case AddCommandToList(shellCommand) => addCommand(shellCommand)
 
+    case shellCommand: ShellCommand => updateWithExecutionInfo(shellCommand)
+
     case other: Any => router ! other
+  }
+
+  def updateWithExecutionInfo(shellCommand: ShellCommand) = {
+    // Throws this error:
+    // Syntax error, unrecognized expression: ${shellCommand.issueInfo.commandId}-command-response
+    println("Gen-ning ids")
+    def id = shellCommand.issueInfo.commandId.toString()
+    val responseFieldId: String = "#" + id  + "-command-response"
+    val executedTimestampId: String = "#" + id + "-command-executed"
+    println("After id gen")
+
+    shellCommand.executionInfo match {
+      case Some(info: ExecutionInfo) =>
+        val response: String = info.response
+        val executionTime: String = info.commandExecuted.toString()
+        val responseField = jQ(responseFieldId)
+        val executedTimestampField = jQ(executedTimestampId)
+        println(s"Response field is ${responseField}")
+        println(s"Executed time stamp field is ${executedTimestampField}")
+        responseField.text(response)
+        executedTimestampField.text("Executed at "+ executionTime.toString())
+      case None =>
+        jQ(responseFieldId).text("")
+        jQ(executedTimestampId).text("Failure executing command")
+    }
   }
 
   def addCommand(shellCommand: ShellCommand) = {

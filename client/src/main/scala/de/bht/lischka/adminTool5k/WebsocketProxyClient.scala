@@ -56,7 +56,7 @@ class WebsocketProxyClient extends Actor {
   def connected(socket: dom.WebSocket): Receive = {
     case ReceiveMessage(messageEvent: MessageEvent) => context.parent ! messageEvent.data.toString()
 
-    case PickledMessageForSending(msg: String) =>
+    case msg: String =>
       socket.send(msg)
       println(s"And sending ${msg} out (proxy)")
 

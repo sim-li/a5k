@@ -24,7 +24,6 @@ class Router extends Actor {
   }
 
   override def receive: Actor.Receive = {
-
     case RegisterListener(actor: ActorRef) =>
       registeredReceivers = actor :: registeredReceivers
 
@@ -38,7 +37,9 @@ class Router extends Actor {
 
     case sendMessage: SendMessage => forwardMsg(sendMessage)
 
-    case wsMessage: WSMessage => forwardMsg(SendMessage(wsMessage))
+    case wsMessage: WSMessage => forwardMsg(wsMessage)
+
+    case x => println(s"Triggered default case with ${x}")
 
   }
 
