@@ -60,10 +60,9 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
       commandEntries += (id -> context.actorOf(ShellCommandEntry.props(shellCommand)))
       router ! SendMessage(ExecuteCommand(shellCommand))
 
-
     case shellCommand: ShellCommand =>
       val shellCommandEntry: ActorRef = commandEntries(shellCommand.issueInfo.commandId)
-      shellCommandEntry ! ShellCommandEntry.Update(shellCommand)
+      shellCommandEntry ! ShellCommandEntry.UpdateEntry(shellCommand)
 
     case other: Any => router ! other
   }

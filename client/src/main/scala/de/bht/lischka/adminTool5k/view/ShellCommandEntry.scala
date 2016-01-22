@@ -11,7 +11,7 @@ import scala.collection.script.Update
 
 object ShellCommandEntry {
   def props(shellCommand: ShellCommand) = Props(new ShellCommandEntry(shellCommand))
-  case class Update(command: ShellCommand)
+  case class UpdateEntry(command: ShellCommand)
 }
 
 class ShellCommandEntry(shellCommand: ShellCommand) extends Actor {
@@ -24,7 +24,8 @@ class ShellCommandEntry(shellCommand: ShellCommand) extends Actor {
   }
 
   def receive: Receive = {
-    case Update(updatedShellCommand: ShellCommand) =>
+    case UpdateEntry(updatedShellCommand: ShellCommand) =>
       view.shellCommand() = updatedShellCommand
+    case _ => println("Hit default case in view")
   }
 }
