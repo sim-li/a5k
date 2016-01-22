@@ -1,80 +1,30 @@
 package de.bht.lischka.adminTool5k.view
 
-
+import java.util.UUID
+import akka.actor.{Actor, Props, ActorRef}
 import de.bht.lischka.adminTool5k.ModelX.ShellCommand
-import BootstrapCSS._
-import org.scalajs.dom.document
+import org.scalajs.jquery._
 import rx._
-import scala.scalajs.js.JSApp
-import scala.scalajs.js.annotation.JSExport
-import scalatags.JsDom.all._
-import scalatags.rx.all._
+import org.scalajs.jquery.{jQuery => jQ, _}
+
+import scala.collection.script.Update
 
 object ShellCommandEntry {
-  def apply(shellCommand: Var[ShellCommand]) = new ShellCommandEntry(shellCommand)
+  def props(shellCommand: ShellCommand) = Props(new ShellCommandEntry(shellCommand))
+  case class Update(command: ShellCommand)
 }
 
-class ShellCommandEntry(val shellCommand: Var[ShellCommand]) {
-  import rx._
+class ShellCommandEntry(shellCommand: ShellCommand) extends Actor {
+  import ShellCommandEntry._
 
-  // @TODO: Any way to simplify this growing mess?
-  val commandResponseText: Rx[String] = Rx { shellCommand().executionInfo match {
-    case Some(executionInfo) => executionInfo.response
-    case _ => "Error"
-  }}
+  val view  = ShellCommandEntryView(Var(shellCommand))
 
-  val issueDate: Rx[String] = Rx { shellCommand().issueInfo.commandIssued.toString() }
-
-  val executionDate: Rx[String] = Rx { shellCommand().executionInfo match {
-    case Some(executionInfo) => executionInfo.commandExecuted.toString()
-    case _ => "Error"
-  }}
-
-  val userName: Rx[String] = Rx { shellCommand().issueInfo.user.name }
-
-  val command: Rx[String] = Rx { shellCommand().command }
-
-  // @TODO: Parse this nicely.
-  def formatResponse(responseText: String) = {
-    responseText.replace("\n", "<br>").replace(" ", "&nbsp;")
+  override def preStart = {
+    jQ("#command_list").append(view.render)
   }
 
-  val shellCommandEntry =
-    div(cls:=BootstrapCSS.list_group_item)(
-      userAndCommandNameSection,
-      commandResponseSection,
-      issueAndExecutionInfoSection
-   )
-
-  def userAndCommandNameSection() = {
-    h4(cls:=BootstrapCSS.list_group_item_heading) (
-      span(cls:=BootstrapCSS.badge) (userName),
-      p(command)
-    )
+  def receive: Receive = {
+    case Update(updatedShellCommand: ShellCommand) =>
+      view.shellCommand() = updatedShellCommand
   }
-
-  def commandResponseSection() = {
-    p(cls:=BootstrapCSS.list_group_item_text)(
-      code(
-        h6(
-          commandResponseText
-        )
-      )
-    )
-  }
-
-  def issueAndExecutionInfoSection() = {
-    h6(cls:=BootstrapCSS.list_group_item_footer_text_right)(
-      div(
-        b(issueDate)
-      ),
-      div(
-        b(
-          executionDate
-        )
-      )
-    )
-  }
-
-  def render = shellCommandEntry.render
 }
