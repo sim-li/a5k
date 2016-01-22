@@ -13,15 +13,10 @@ object CommandExecutor {
 }
 
 class CommandExecutor(resultReceiver: ActorRef) extends Actor {
-
-  def formatResponse(responseText: String) = {
-      responseText.replace("\n", "<br>").replace(" ", "&nbsp;")
-  }
-
   override def receive: Receive = {
     case ExecuteCommand(shellCommand) =>
     val cmd: String = shellCommand.command
-    val cmdResponse = formatResponse(cmd.!!)
+    val cmdResponse = cmd.!!
     val answer = shellCommand.copy(executionInfo = Some(ExecutionInfo(cmdResponse, new Date(), true)))
     // @TODO: Remove this when done experimenting
     Thread.sleep(1500)

@@ -18,7 +18,7 @@ object MainScreen {
 class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   import MainScreen._
 
-  var commandEntries: List[ShellCommandEntry] = List()
+  var commandEntries: Map[UUID, ShellCommandEntry] = Map()
 
   override def receive: Receive = loggedOut
 
@@ -55,32 +55,13 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
     case AddCommandToList(shellCommand) => addCommand(shellCommand)
 
-    case shellCommand: ShellCommand => updateCommanEntryWithExecutionInfo(shellCommand)
+    case shellCommand: ShellCommand => modifyCommandWith(shellCommand)
 
     case other: Any => router ! other
   }
 
-  def updateCommanEntryWithExecutionInfo(shellCommand: ShellCommand) = {
-    def id = shellCommand.issueInfo.commandId.toString()
-    val responseFieldId: String = "#" + id  + "-command-response"
-    val executedTimestampId: String = "#" + id + "-command-executed"
-
-    shellCommand.executionInfo match {
-      case Some(info: ExecutionInfo) =>
-        val response: String = info.response
-        val executionTime: String = info.commandExecuted.toString()
-        val responseField = jQ(responseFieldId)
-        val executedTimestampField = jQ(executedTimestampId)
-        responseField.html(response)
-        executedTimestampField.text("Executed at "+ executionTime.toString())
-      case None =>
-        jQ(responseFieldId).text("")
-        jQ(executedTimestampId).text("Failure executing command")
-    }
-  }
-
-  def modifyCommand(shellCommand: ShellCommand) = {
-    val cmd: ShellCommandEntry = searchById(shellCommand.issueInfo.commandId)
+  def modifyCommandWith(shellCommand: ShellCommand) = {
+    val cmd: ShellCommandEntry = commandEntries(shellCommand.issueInfo.commandId)
     shellCommand.executionInfo match {
       case Some(info: ExecutionInfo) =>
         cmd.commandResponse() = info.response
@@ -91,12 +72,10 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     }
   }
 
-  // Ouch!
-  def searchById(id: UUID): ShellCommandEntry = commandEntries.filter(_.shellCommand.issueInfo.commandId == id)(0)
-
   def addCommand(shellCommand: ShellCommand) = {
     val newEntry = ShellCommandEntry(shellCommand)
-    commandEntries = newEntry :: commandEntries
+    val commandId = newEntry.shellCommand.issueInfo.commandId
+    commandEntries += (commandId -> newEntry)
     jQ("#command_list").append(newEntry.render)
   }
 }

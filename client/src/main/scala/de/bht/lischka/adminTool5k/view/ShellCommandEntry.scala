@@ -22,6 +22,11 @@ class ShellCommandEntry(val shellCommand: ShellCommand) {
   val commandStatus = Var("Execution pending...")
   val commandStatusText = Rx(s"${commandStatus()}")
 
+  // TOOD: Parse this nicely.
+  def formatResponse(responseText: String) = {
+    responseText.replace("\n", "<br>").replace(" ", "&nbsp;")
+  }
+
   val shellCommandEntry =
     div(id:=shellCommand.issueInfo.commandId.toString(), cls:=BootstrapCSS.list_group_item)(
       userAndCommandNameSection,
@@ -31,7 +36,7 @@ class ShellCommandEntry(val shellCommand: ShellCommand) {
 
   def userAndCommandNameSection() = {
     h4(cls:=BootstrapCSS.list_group_item_heading) (
-      span(cls:=BootstrapCSS.badge)(
+      span(cls:=BootstrapCSS.badge) (
         shellCommand.issueInfo.user.name
       ),
       p(shellCommand.command)
