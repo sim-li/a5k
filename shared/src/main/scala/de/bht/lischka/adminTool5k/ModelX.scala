@@ -25,7 +25,7 @@ object ModelX {
 
   case class ExecutionInfo(response: String, commandExecuted: Date, success: Boolean) extends DataModel
 
-  case class IssueInfo(user: User, commandId: UUID, commandIssued: Date) extends DataModel
+  case class IssueInfo(user: User, id: UUID = UUID.randomUUID(), commandIssued: Date = new Date()) extends DataModel
 
   trait Stat extends DataModel
 

@@ -41,10 +41,6 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     }
   }
 
-  def generateUniqueId() = {
-    UUID.randomUUID()
-  }
-
   def loggedOut: Receive = {
     case LoginUser(user: User) =>
       context.become(loggedIn(user))
@@ -53,15 +49,13 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
   def loggedIn(user: User): Receive = {
     case HandleCommandExecution(command: String) =>
-      //@TODO: Simplify this, move to actor ShellCommandEntry constructor
-      val id = generateUniqueId()
-      val issueInfo = IssueInfo(user, id, new Date())
-      val shellCommand: ShellCommand = ShellCommand(command, issueInfo)
-      commandEntries += (id -> context.actorOf(ShellCommandEntry.props(shellCommand)))
+
+      val shellCommand = ShellCommand(command, IssueInfo(user))
+      commandEntries += (shellCommand.issueInfo.id -> context.actorOf(ShellCommandEntry.props(shellCommand)))
       router ! SendMessage(ExecuteCommand(shellCommand))
 
     case shellCommand: ShellCommand =>
-      val shellCommandEntry: ActorRef = commandEntries(shellCommand.issueInfo.commandId)
+      val shellCommandEntry: ActorRef = commandEntries(shellCommand.issueInfo.id)
       shellCommandEntry ! ShellCommandEntry.UpdateEntry(shellCommand)
 
     case other: Any => router ! other
