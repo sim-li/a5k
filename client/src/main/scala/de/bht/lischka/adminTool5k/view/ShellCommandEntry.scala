@@ -11,24 +11,36 @@ import scalatags.JsDom.all._
 import scalatags.rx.all._
 
 object ShellCommandEntry {
-  def apply(shellCommand: ShellCommand) = new ShellCommandEntry(shellCommand)
+  def apply(shellCommand: Var[ShellCommand]) = new ShellCommandEntry(shellCommand)
 }
 
-class ShellCommandEntry(val shellCommand: ShellCommand) {
+class ShellCommandEntry(val shellCommand: Var[ShellCommand]) {
   import rx._
 
-  val commandResponse = Var("Doin something")
-  val commandResponseText = Rx(s"${commandResponse()}")
-  val commandStatus = Var("Execution pending...")
-  val commandStatusText = Rx(s"${commandStatus()}")
+  // @TODO: Any way to simplify this growing mess?
+  val commandResponseText: Rx[String] = Rx { shellCommand().executionInfo match {
+    case Some(executionInfo) => executionInfo.response
+    case _ => "Error"
+  }}
 
-  // TOOD: Parse this nicely.
+  val issueDate: Rx[String] = Rx { shellCommand().issueInfo.commandIssued.toString() }
+
+  val executionDate: Rx[String] = Rx { shellCommand().executionInfo match {
+    case Some(executionInfo) => executionInfo.commandExecuted.toString()
+    case _ => "Error"
+  }}
+
+  val userName: Rx[String] = Rx { shellCommand().issueInfo.user.name }
+
+  val command: Rx[String] = Rx { shellCommand().command }
+
+  // @TODO: Parse this nicely.
   def formatResponse(responseText: String) = {
     responseText.replace("\n", "<br>").replace(" ", "&nbsp;")
   }
 
   val shellCommandEntry =
-    div(id:=shellCommand.issueInfo.commandId.toString(), cls:=BootstrapCSS.list_group_item)(
+    div(cls:=BootstrapCSS.list_group_item)(
       userAndCommandNameSection,
       commandResponseSection,
       issueAndExecutionInfoSection
@@ -36,17 +48,15 @@ class ShellCommandEntry(val shellCommand: ShellCommand) {
 
   def userAndCommandNameSection() = {
     h4(cls:=BootstrapCSS.list_group_item_heading) (
-      span(cls:=BootstrapCSS.badge) (
-        shellCommand.issueInfo.user.name
-      ),
-      p(shellCommand.command)
+      span(cls:=BootstrapCSS.badge) (userName),
+      p(command)
     )
   }
 
   def commandResponseSection() = {
     p(cls:=BootstrapCSS.list_group_item_text)(
       code(
-        h6(id:=s"${shellCommand.issueInfo.commandId.toString()}-command-response")(
+        h6(
           commandResponseText
         )
       )
@@ -55,12 +65,12 @@ class ShellCommandEntry(val shellCommand: ShellCommand) {
 
   def issueAndExecutionInfoSection() = {
     h6(cls:=BootstrapCSS.list_group_item_footer_text_right)(
-      div(id:=s"${shellCommand.issueInfo.commandId}-command-issued")(
-        b(shellCommand.issueInfo.commandIssued.toString())
+      div(
+        b(issueDate)
       ),
-      div(id:=s"${shellCommand.issueInfo.commandId.toString()}-command-executed")(
+      div(
         b(
-          commandStatusText
+          executionDate
         )
       )
     )

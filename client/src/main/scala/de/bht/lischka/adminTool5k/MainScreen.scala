@@ -8,6 +8,11 @@ import de.bht.lischka.adminTool5k.Session.GetUser
 import de.bht.lischka.adminTool5k.view.{ShellCommandEntry}
 import org.scalajs.jquery.{jQuery => jQ, _}
 import java.util.UUID
+import rx._
+import scala.scalajs.js.JSApp
+import scala.scalajs.js.annotation.JSExport
+import scalatags.JsDom.all._
+import scalatags.rx.all._
 
 object MainScreen {
   def props(router: ActorRef, session: ActorRef) = Props(new MainScreen(router, session))
@@ -55,26 +60,21 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
     case AddCommandToList(shellCommand) => addCommand(shellCommand)
 
-    case shellCommand: ShellCommand => modifyCommandWith(shellCommand)
+    case shellCommand: ShellCommand =>
+      modifyExistingShellCommandWith(shellCommand)
 
     case other: Any => router ! other
   }
 
-  def modifyCommandWith(shellCommand: ShellCommand) = {
-    val cmd: ShellCommandEntry = commandEntries(shellCommand.issueInfo.commandId)
-    shellCommand.executionInfo match {
-      case Some(info: ExecutionInfo) =>
-        cmd.commandResponse() = info.response
-        cmd.commandStatus() = info.commandExecuted.toString()
-      case None =>
-        cmd.commandResponse() = "Execution Error"
-        cmd.commandStatus() = "-"
-    }
+  def modifyExistingShellCommandWith(updatedShellCommand: ShellCommand) = {
+    val id = updatedShellCommand.issueInfo.commandId
+    commandEntries(id).shellCommand() = updatedShellCommand
   }
 
   def addCommand(shellCommand: ShellCommand) = {
-    val newEntry = ShellCommandEntry(shellCommand)
-    val commandId = newEntry.shellCommand.issueInfo.commandId
+    val newEntry = ShellCommandEntry(Var(shellCommand))
+    val commandId: UUID = shellCommand.issueInfo.commandId
+    // @TODO This should fail if ID exists
     commandEntries += (commandId -> newEntry)
     jQ("#command_list").append(newEntry.render)
   }
