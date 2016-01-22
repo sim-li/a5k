@@ -23,6 +23,8 @@ class CommandExecutor(resultReceiver: ActorRef) extends Actor {
     val cmd: String = shellCommand.command
     val cmdResponse = formatResponse(cmd.!!)
     val answer = shellCommand.copy(executionInfo = Some(ExecutionInfo(cmdResponse, new Date(), true)))
+    // @TODO: Remove this when done experimenting
+    Thread.sleep(1500)
     resultReceiver ! SendMessage(answer)
   }
 }

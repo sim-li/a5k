@@ -18,12 +18,10 @@ class LoginScreen(session: ActorRef) extends Actor {
   def registerCallback() = {
     jQ("#login_button") click {
       (event: JQueryEventObject) =>
-        println("Click on login button")
         val loginTextfield = jQ("#login_textfield")
         def userName = loginTextfield.value.toString()
         def validUsername = userName.length() > 0
         if (validUsername) {
-          println(s"Forwarding to router LoginMessage for user $userName")
           self ! LoginUser(User(userName))
         }
     }
@@ -33,6 +31,5 @@ class LoginScreen(session: ActorRef) extends Actor {
     case LoginUser(user: User) =>
       jQ("#login_container").hide()
       session ! LoginUser(user)
-      println(s"Sent to session LoginMessage for user $user")
   }
 }

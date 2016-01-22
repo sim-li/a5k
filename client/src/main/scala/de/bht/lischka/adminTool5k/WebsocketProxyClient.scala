@@ -58,7 +58,6 @@ class WebsocketProxyClient extends Actor {
 
     case msg: String =>
       socket.send(msg)
-      println(s"And sending ${msg} out (proxy)")
 
     case ConnectionClosed => become(closed)
 
