@@ -79,10 +79,24 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     }
   }
 
+  def modifyCommand(shellCommand: ShellCommand) = {
+    val cmd: ShellCommandEntry = searchById(shellCommand.issueInfo.commandId)
+    shellCommand.executionInfo match {
+      case Some(info: ExecutionInfo) =>
+        cmd.commandResponse() = info.response
+        cmd.commandStatus() = info.commandExecuted.toString()
+      case None =>
+        cmd.commandResponse() = "Execution Error"
+        cmd.commandStatus() = "-"
+    }
+  }
+
+  // Ouch!
+  def searchById(id: UUID): ShellCommandEntry = commandEntries.filter(_.shellCommand.issueInfo.commandId == id)(0)
+
   def addCommand(shellCommand: ShellCommand) = {
     val newEntry = ShellCommandEntry(shellCommand)
     commandEntries = newEntry :: commandEntries
     jQ("#command_list").append(newEntry.render)
-    newEntry.commandResponse() = "Hello motherlovers!"
   }
 }

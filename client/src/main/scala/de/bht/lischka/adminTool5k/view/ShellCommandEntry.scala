@@ -11,25 +11,25 @@ import scalatags.JsDom.all._
 import scalatags.rx.all._
 
 object ShellCommandEntry {
-  def apply(shellCommand: ShellCommand) = new ShellCommandEntry(shellCommand) // Var here, link it up!
+  def apply(shellCommand: ShellCommand) = new ShellCommandEntry(shellCommand)
 }
 
-class ShellCommandEntry(shellCommand: ShellCommand) {
+class ShellCommandEntry(val shellCommand: ShellCommand) {
   import rx._
-  val commandResponse = Var("Processing command")
+
+  val commandResponse = Var("Doin something")
   val commandResponseText = Rx(s"${commandResponse()}")
   val commandStatus = Var("Execution pending...")
   val commandStatusText = Rx(s"${commandStatus()}")
 
   val shellCommandEntry =
     div(id:=shellCommand.issueInfo.commandId.toString(), cls:=BootstrapCSS.list_group_item)(
-      userAndCommandName,
+      userAndCommandNameSection,
       commandResponseSection,
-      issueAndExecutionInfo
-
+      issueAndExecutionInfoSection
    )
 
-  def userAndCommandName() = {
+  def userAndCommandNameSection() = {
     h4(cls:=BootstrapCSS.list_group_item_heading) (
       span(cls:=BootstrapCSS.badge)(
         shellCommand.issueInfo.user.name
@@ -48,7 +48,7 @@ class ShellCommandEntry(shellCommand: ShellCommand) {
     )
   }
 
-  def issueAndExecutionInfo() = {
+  def issueAndExecutionInfoSection() = {
     h6(cls:=BootstrapCSS.list_group_item_footer_text_right)(
       div(id:=s"${shellCommand.issueInfo.commandId}-command-issued")(
         b(shellCommand.issueInfo.commandIssued.toString())
