@@ -5,7 +5,7 @@ import java.util.Date
 import akka.actor.{ActorRef, Props, Actor}
 import akka.actor.Actor.Receive
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
-import de.bht.lischka.adminTool5k.ModelX.{ExecuteCommand, ExecutionInfo}
+import de.bht.lischka.adminTool5k.ModelX._
 import sys.process._
 
 object CommandExecutor {
@@ -13,13 +13,13 @@ object CommandExecutor {
 }
 
 class CommandExecutor(resultReceiver: ActorRef) extends Actor {
+
   override def receive: Receive = {
     case ExecuteCommand(shellCommand) =>
-    val cmd: String = shellCommand.command
-    val cmdResponse = cmd.!!
-    val answer = shellCommand.copy(executionInfo = Some(ExecutionInfo(cmdResponse, new Date(), true)))
+    val bashResult = shellCommand.command.!!
+    val cmdResponse = shellCommand.copy(executionInfo = Some(ExecutionInfo(bashResult, new Date(), true)))
     // @TODO: Remove this when done experimenting
     Thread.sleep(1500)
-    resultReceiver ! SendMessage(answer)
+    resultReceiver ! SendMessage(CommandResult(cmdResponse))
   }
 }

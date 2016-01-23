@@ -36,8 +36,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     jQ("#send_command_button") click {
       (event: JQueryEventObject) =>
         val commandTextfield = jQ("#command_textfield")
-        val command: String = commandTextfield.value().toString()
-        self ! HandleCommandExecution(command)
+        self ! HandleCommandExecution(commandTextfield.value().toString())
     }
   }
 
@@ -48,10 +47,14 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   }
 
   def loggedIn(user: User): Receive = {
-    case HandleCommandExecution(command: String) =>
-      commandEntries = context.actorOf(ShellCommandEntry.props(command, user)) :: commandEntries
+    case HandleCommandExecution(cmd: String) =>
+      val issuedCommand = ShellCommand(user, cmd)
+      context.parent ! SendMessage(ExecuteCommand(issuedCommand))
+      commandEntries = context.actorOf(ShellCommandEntry.props(issuedCommand)) :: commandEntries
 
-    case shellCommand: ShellCommand => commandEntries.foreach(_ ! ShellCommandEntry.UpdateEntry(shellCommand))
+    case CommandResult(shellCommand) =>
+      commandEntries.foreach(_ ! ShellCommandEntry.UpdateEntry(shellCommand))
+
 
     case messageOut: SendMessage => router ! messageOut
 

@@ -11,7 +11,7 @@ import org.scalajs.jquery.{jQuery => jQ, _}
 import scala.collection.script.Update
 
 object ShellCommandEntry {
-  def props(command: String, user: User) = Props(new ShellCommandEntry(ShellCommand(command, IssueInfo(user))))
+  def props(shellCommand: ShellCommand) = Props(new ShellCommandEntry(shellCommand))
   case class UpdateEntry(command: ShellCommand)
 }
 
@@ -22,7 +22,6 @@ class ShellCommandEntry(shellCommand: ShellCommand) extends Actor {
 
   override def preStart = {
     jQ("#command_list").append(view.render)
-    context.parent ! SendMessage(ExecuteCommand(shellCommand))
   }
 
   def receive: Receive = {

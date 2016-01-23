@@ -19,9 +19,15 @@ object ModelX {
 
   case class LoginUser(user: User) extends WSMessage
 
+  object ShellCommand {
+    def apply(user: User, command: String): ShellCommand = ShellCommand(command, IssueInfo(user))
+  }
+
   case class ShellCommand(command: String, issueInfo: IssueInfo, executionInfo: Option[ExecutionInfo] = None) extends DataModel
 
   case class ExecuteCommand(shellCommand: ShellCommand) extends WSMessage
+
+  case class CommandResult(shellCommand: ShellCommand) extends WSMessage
 
   case class ExecutionInfo(response: String, commandExecuted: Date, success: Boolean) extends DataModel
 
@@ -55,6 +61,7 @@ object ModelX {
       concreteType[IssueInfo].
       concreteType[LoginUser].
       concreteType[ExecuteCommand].
+      concreteType[CommandResult].
       concreteType[TestWSMessage]
 
     implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
