@@ -23,7 +23,7 @@ object MainScreen {
 class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   import MainScreen._
 
-  var commandEntries: List[ActorRef] = List()
+  var commandEntries: Map[UUID, ActorRef] = Map()
 
   override def receive: Receive = loggedOut
 
@@ -47,18 +47,28 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   }
 
   def loggedIn(user: User): Receive = {
+
+
     case HandleCommandExecution(cmd: String) =>
       val issuedCommand = ShellCommand(user, cmd)
       context.parent ! SendMessage(ExecuteCommand(issuedCommand))
-      commandEntries = context.actorOf(ShellCommandEntry.props(issuedCommand)) :: commandEntries
+      addShellCommandEntry(issuedCommand)
 
-    case CommandResult(shellCommand) =>
-      commandEntries.foreach(_ ! ShellCommandEntry.UpdateEntry(shellCommand))
-
+    case CommandResult(shellCommand) => {
+      val id = shellCommand.issueInfo.id
+      if (commandEntries.contains(id))
+        commandEntries(id) ! ShellCommandEntry.UpdateEntry(shellCommand)
+      else
+        addShellCommandEntry(shellCommand)
+    }
 
     case messageOut: SendMessage => router ! messageOut
 
     case _ => println("Mainscreen hit default case")
+  }
+
+  def addShellCommandEntry(issuedCommand: ShellCommand): Unit = {
+    commandEntries += issuedCommand.issueInfo.id -> context.actorOf(ShellCommandEntry.props(issuedCommand))
   }
 
 }
