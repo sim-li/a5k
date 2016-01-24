@@ -16,10 +16,10 @@ class CommandExecutor(resultReceiver: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case ExecuteCommand(shellCommand) =>
-    val bashResult = shellCommand.command.!!
-    val cmdResponse = shellCommand.copy(executionInfo = Some(ExecutionInfo(bashResult, new Date(), true)))
-    // @TODO: Remove this when done experimenting
-    Thread.sleep(1500)
-    resultReceiver ! SendMessage(CommandResult(cmdResponse))
+      val bashResult = shellCommand.command.!!
+      val cmdResponse = shellCommand.copy(executionInfo = Some(ExecutionInfo(bashResult, new Date(), true)))
+      // @TODO: Remove this when done experimenting
+      Thread.sleep(1500)
+      resultReceiver ! CommandResult(cmdResponse)
   }
 }

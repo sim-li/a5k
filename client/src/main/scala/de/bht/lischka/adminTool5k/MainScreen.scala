@@ -47,7 +47,8 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   }
 
   def loggedIn(user: User): Receive = {
-
+    //@TODO ShowExecuteCommand?
+    case ExecuteCommand(cmd) => addShellCommandEntry(cmd)
 
     case HandleCommandExecution(cmd: String) =>
       val issuedCommand = ShellCommand(user, cmd)
@@ -64,7 +65,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
     case messageOut: SendMessage => router ! messageOut
 
-    case _ => println("Mainscreen hit default case")
+    case x => println(s"Mainscreen hit default case ${x}")
   }
 
   def addShellCommandEntry(issuedCommand: ShellCommand): Unit = {

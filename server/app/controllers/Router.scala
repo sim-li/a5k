@@ -1,23 +1,25 @@
 package controllers
 
 import java.util.Date
+import javax.management.modelmbean.RequiredModelMBean
 
 import akka.actor.{Actor, Props, ActorRef}
-import controllers.Router.{TestSendNewsToAllReceivers, TestListReceivers}
+import controllers.Router.{RememberForReplay, ForwardToAllSessions, TestListReceivers}
 import de.bht.lischka.adminTool5k.InternalMessages.{SendMessage, RegisterListener}
-import de.bht.lischka.adminTool5k.ModelX.{ExecutionInfo, LoginUser, ExecuteCommand, WSMessage}
+import de.bht.lischka.adminTool5k.ModelX._
 
 object Router {
   def props = Props(new Router())
   case object TestListReceivers
-  case class TestSendNewsToAllReceivers(news: Any)
+  case class ForwardToAllSessions(news: Any)
+  case class RememberForReplay(msg: Any)
 }
 
 class Router extends Actor {
-  var registeredReceivers = List[ActorRef]()
+  var registeredReceivers: List[ActorRef] = List()
+  var replay: List[SendMessage] = List()
 
-  //REPL
-  def forwardMsg(message: Any) = {
+  def forwardMsgToAllSessions(message: Any) = {
     val ignoredReceiver = sender()
     registeredReceivers.filter(receiver => receiver != ignoredReceiver).
       foreach((receiver: ActorRef)  => receiver ! message)
@@ -31,20 +33,32 @@ class Router extends Actor {
   }
 
   override def receive: Actor.Receive = {
+    case RegisterListener(newReceiver: ActorRef) =>
+      registeredReceivers = newReceiver :: registeredReceivers
+      replay.foreach(msg => {
+        println(s"Sending back repl msg ${msg} to ${newReceiver}")
+        newReceiver ! msg
+      })
 
-    case RegisterListener(session: ActorRef) =>
-      registeredReceivers = session :: registeredReceivers
+    case ForwardToAllSessions(msg) => forwardMsgToAllSessions(msg)
 
-    case TestListReceivers =>
-      sender ! registeredReceivers
-
-    case TestSendNewsToAllReceivers(news: Any) =>
-      registeredReceivers.map(receiver => receiver ! news)
+    case RememberForReplay(msg: SendMessage) =>
+      replay = msg :: replay
+      println(s"Remembering ${msg} for replay")
 
     case wsMessage: WSMessage =>
       wsMessage match {
+        case CommandResult(cmdResponse)  =>
+          val msg = SendMessage(CommandResult(cmdResponse))
+          self ! ForwardToAllSessions(msg)
+          self ! RememberForReplay(msg)
+
         case ExecuteCommand(shellCommand) =>
-          context.actorOf(CommandExecutor.props(resultHandler = sender)) ! ExecuteCommand(shellCommand)
+          val msg = SendMessage(ExecuteCommand(shellCommand))
+          self ! ForwardToAllSessions(msg)
+          self ! RememberForReplay(msg)
+          val commandExecutor = context.actorOf(CommandExecutor.props(resultHandler = self))
+          commandExecutor ! ExecuteCommand(shellCommand)
 
         case anything => println(s"Triggered default case in Router, got ${anything}")
       }

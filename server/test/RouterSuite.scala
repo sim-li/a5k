@@ -35,7 +35,7 @@ object RouterSuite extends utest.TestSuite {
         val anotherSession = TestProbe()
         val andJetAnotherSession = TestProbe()
         registerProbesAsReceivers(aSession, anotherSession, andJetAnotherSession)
-        session.send(router, TestSendNewsToAllReceivers(News))
+        session.send(router, ForwardToAllSessions(News))
         expectNewsReceivedIn(aSession, anotherSession, andJetAnotherSession)
       }
 
