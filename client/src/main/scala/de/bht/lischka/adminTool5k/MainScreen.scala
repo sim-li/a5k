@@ -25,8 +25,6 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
   var commandEntries: Map[UUID, ActorRef] = Map()
 
-  override def receive: Receive = loggedOut
-
   override def preStart: Unit = {
     registerCallback()
     router ! RegisterListener(self)
@@ -40,20 +38,12 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     }
   }
 
-  def loggedOut: Receive = {
-    case LoginUser(user: User) =>
-      context.become(loggedIn(user))
-      jQ("#main_container").show()
-  }
+  override def receive: Receive = loggedOut
 
-  def loggedIn(user: User): Receive = {
+  // View must handle incomming msgs when logged out for command replay
+  def commonOps: Receive = {
     //@TODO ShowExecuteCommand?
     case ExecuteCommand(cmd) => addShellCommandEntry(cmd)
-
-    case HandleCommandExecution(cmd: String) =>
-      val issuedCommand = ShellCommand(user, cmd)
-      context.parent ! SendMessage(ExecuteCommand(issuedCommand))
-      addShellCommandEntry(issuedCommand)
 
     case CommandResult(shellCommand) => {
       val id = shellCommand.issueInfo.id
@@ -62,12 +52,28 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
       else
         addShellCommandEntry(shellCommand)
     }
+  }
+
+  def loggedOut: Receive = commonOps orElse {
+    case LoginUser(user: User) =>
+      context.become(loggedIn(user))
+      jQ("#main_container").show()
+  }
+
+  def loggedIn(user: User): Receive = commonOps orElse {
+    case HandleCommandExecution(cmd: String) => {
+      val issuedCommand = ShellCommand(user, cmd)
+      context.parent ! SendMessage(ExecuteCommand(issuedCommand))
+      addShellCommandEntry(issuedCommand)
+    }
 
     case messageOut: SendMessage => router ! messageOut
 
     case x => println(s"Mainscreen hit default case ${x}")
   }
 
+  // Adapt ActorBinTree example and have command entries
+  // communicate with each other. Invent reason to make this necessary
   def addShellCommandEntry(issuedCommand: ShellCommand): Unit = {
     commandEntries += issuedCommand.issueInfo.id -> context.actorOf(ShellCommandEntry.props(issuedCommand))
   }

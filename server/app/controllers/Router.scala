@@ -11,7 +11,7 @@ import de.bht.lischka.adminTool5k.ModelX._
 object Router {
   def props = Props(new Router())
   case object TestListReceivers
-  case class ForwardToAllSessions(news: Any)
+  case class ForwardToAllSessions(news: Any, ignoredReceiver: ActorRef)
   case class RememberForReplay(msg: Any)
 }
 
@@ -19,10 +19,10 @@ class Router extends Actor {
   var registeredReceivers: List[ActorRef] = List()
   var replay: List[SendMessage] = List()
 
-  def forwardMsgToAllSessions(message: Any) = {
-    val ignoredReceiver = sender()
-    registeredReceivers.filter(receiver => receiver != ignoredReceiver).
-      foreach((receiver: ActorRef)  => receiver ! message)
+  def forwardMsgToAllSessions(message: Any, ignoredReceiver: ActorRef) = {
+    registeredReceivers.
+      filter(_ != ignoredReceiver).
+      foreach(_ ! message)
   }
 
   //REPL
@@ -40,7 +40,7 @@ class Router extends Actor {
         newReceiver ! msg
       })
 
-    case ForwardToAllSessions(msg) => forwardMsgToAllSessions(msg)
+    case ForwardToAllSessions(msg, ignoredReceiver) => forwardMsgToAllSessions(msg, ignoredReceiver)
 
     case RememberForReplay(msg: SendMessage) =>
       replay = msg :: replay
@@ -50,12 +50,13 @@ class Router extends Actor {
       wsMessage match {
         case CommandResult(cmdResponse)  =>
           val msg = SendMessage(CommandResult(cmdResponse))
-          self ! ForwardToAllSessions(msg)
+          //@TODO: Remove this way of satisfying function parameters
+          self ! ForwardToAllSessions(msg, self)
           self ! RememberForReplay(msg)
 
         case ExecuteCommand(shellCommand) =>
           val msg = SendMessage(ExecuteCommand(shellCommand))
-          self ! ForwardToAllSessions(msg)
+          self ! ForwardToAllSessions(msg, sender())
           self ! RememberForReplay(msg)
           val commandExecutor = context.actorOf(CommandExecutor.props(resultHandler = self))
           commandExecutor ! ExecuteCommand(shellCommand)
