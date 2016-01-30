@@ -5,7 +5,7 @@ import akka.actor.{Props, Actor, ActorRef}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.Session.GetUser
-import de.bht.lischka.adminTool5k.view.{ShellCommandEntry, ShellCommandEntryView}
+import de.bht.lischka.adminTool5k.view.{SystemStatsSection, ShellCommandEntry, ShellCommandEntryView}
 import org.scalajs.jquery.{jQuery => jQ, _}
 import java.util.UUID
 import rx._
@@ -14,6 +14,7 @@ import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
 import scalatags.JsDom.all._
 import scalatags.rx.all._
+import SystemStats._
 
 object MainScreen {
   def props(router: ActorRef, session: ActorRef) = Props(new MainScreen(router, session))
@@ -28,6 +29,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   override def preStart: Unit = {
     registerCallback()
     router ! RegisterListener(self)
+    context.actorOf(SystemStatsSection.props(SystemStatsSection(), "system-stats-section")
   }
 
   def registerCallback() = {
@@ -43,7 +45,11 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   // View must handle incomming msgs when logged out for command replay
   def commonOps: Receive = {
     //@TODO ShowExecuteCommand?
-    case ExecuteCommand(cmd) => addShellCommandEntry(cmd)
+    case ExecuteCommand(shellCommand) =>
+      val id = shellCommand.issueInfo.id
+      if (!commandEntries.contains(id)) {
+        addShellCommandEntry(shellCommand)
+      }
 
     case CommandResult(shellCommand) => {
       val id = shellCommand.issueInfo.id

@@ -17,11 +17,6 @@ class Router extends Actor {
         foreach((receiver: ActorRef)  => receiver ! message)
     }
 
-  def printAllReceivers() = {
-    println(registeredReceivers.foreach((x: ActorRef)  =>
-      println(s"Receiver ${x.path} is registered"))
-    )
-  }
 
   override def receive: Actor.Receive = {
     case RegisterListener(actor: ActorRef) =>
@@ -30,7 +25,6 @@ class Router extends Actor {
     case LoginUser(user: User) =>
       val session = sender()
       session ! SendMessage(LoginUser(user))
-      printAllReceivers()
       val res = forwardMsg(LoginUser(user))
 
     case sendMessage: SendMessage => forwardMsg(sendMessage)

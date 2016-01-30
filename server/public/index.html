@@ -37,7 +37,7 @@
           <p></p>
           <form class='form-inline'>
             <div class='form-group has-error'>
-              <label class='control-label' for='name-field'>Nickname</label>
+              <label class='control-label' id='name-field'>Nickname</label>
               <input class='form-control' id='login_textfield' placeholder='John Coffee' type='text'>
             </div>
             <button class='btn btn-primary' id='login_button' type='button'>Start hacking</button>
@@ -64,40 +64,8 @@
             </div>
           </div>
         </div>
-        <div class='col-md-4'>
-          <div class='panel panel-default'>
-            <div class='panel-heading'>
-              <b>Users connected</b>
-              <div class='list-group'>
-                <a class='list-group-item' href='#'>Alice</a>
-                <a class='list-group-item' href='#'>Bob</a>
-                <a class='list-group-item' href='#'>Kptn Cook</a>
-              </div>
-            </div>
-            <div class='panel-heading'>
-              <b>Top system stats</b>
-              13:30:41:50
-              <table class='table table-striped table-bordered'>
-                <tr>
-                  <th>PID</th>
-                  <th>COMMAND</th>
-                  <th>%CPU</th>
-                  <th>TIME</th>
-                  <th>MEM</th>
-                </tr>
-                <tr>
-                  <td>4148</td>
-                  <td>Google Chrome</td>
-                  <td>0.0</td>
-                  <td>00:01.82</td>
-                  <td>47M</td>
-                </tr>
-              </table>
-            </div>
-          </div>
+        <div class='col-md-4' id='stats_section'>
         </div>
-      </div>
-    </div>
     <script>
       de.bht.lischka.adminTool5k.AdminTool5kClient().main()
     </script>

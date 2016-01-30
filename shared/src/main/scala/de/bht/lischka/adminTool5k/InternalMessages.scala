@@ -20,4 +20,6 @@ object InternalMessages {
   case class UnpickledMessageFromNetwork(msg: WSMessage)
 
   case class RegisterListener(actor: ActorRef)
+
+  case object RequestReplay
 }

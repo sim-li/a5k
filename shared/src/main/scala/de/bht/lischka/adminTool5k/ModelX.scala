@@ -35,23 +35,19 @@ object ModelX {
 
   trait Stat extends DataModel
 
-  case class SystemStats(stats: Seq[Stat]) extends Stat
+  case class SystemStats(processName: String,
+     pid: Option[Pid] = None,
+     cpu: Option[Cpu] = None,
+     time: Option[Time] = None,
+     memoryUsage: Option[MemoryUsage] = None) extends Stat
 
   case class Pid(pid: Int) extends Stat
-
-  case class ProcessName(processName: String) extends Stat
 
   case class Cpu(usage: Double) extends Stat
 
   case class Time(time: Date) extends Stat
 
   case class MemoryUsage(usage: Double) extends Stat
-
-  object SystemStats {
-    def withParameters(stats: Stat*): SystemStats = {
-      new SystemStats(stats.toSeq)
-    }
-  }
 
   object Picklers {
     implicit def basicPickler: PicklerPair[WSMessage] = CompositePickler[WSMessage].
@@ -68,7 +64,6 @@ object ModelX {
       concreteType[Stat].
       concreteType[SystemStats].
       concreteType[Pid].
-      concreteType[ProcessName].
       concreteType[Cpu].
       concreteType[Time].
       concreteType[MemoryUsage]
