@@ -6,6 +6,10 @@ import akka.actor._
 import akka.event.Logging
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
 import de.bht.lischka.adminTool5k.ModelX._
+import de.bht.lischka.adminTool5k.supervision.Router
+import de.bht.lischka.adminTool5k.ui.managers.MainScreen
+import de.bht.lischka.adminTool5k.ui.screens.{MainScreen, LoginScreen}
+import de.bht.lischka.adminTool5k.ws.WebsocketProxyClient
 import org.scalajs.dom
 import org.scalajs.dom.{Event, MessageEvent}
 import scala.scalajs.js

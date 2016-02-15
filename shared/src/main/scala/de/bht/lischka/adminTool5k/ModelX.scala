@@ -29,17 +29,19 @@ object ModelX {
 
   case class CommandResult(shellCommand: ShellCommand) extends WSMessage
 
-  case class ExecutionInfo(response: String, commandExecuted: Date, success: Boolean) extends DataModel
+  case class ExecutionInfo(response: Stsring, commandExecuted: Date, success: Boolean) extends DataModel
 
   case class IssueInfo(user: User, id: UUID = UUID.randomUUID(), commandIssued: Date = new Date()) extends DataModel
 
   trait Stat extends DataModel
 
-  case class SystemStats(processName: String,
-     pid: Option[Pid] = None,
-     cpu: Option[Cpu] = None,
-     time: Option[Time] = None,
-     memoryUsage: Option[MemoryUsage] = None) extends Stat
+  case class SystemStatsUpdate(stats: SystemStatsLine) extends WSMessage
+
+  case class SystemStatsLine(processName: String = "",
+                             pid: Option[Pid] = None,
+                             cpu: Option[Cpu] = None,
+                             time: Option[Time] = None,
+                             memoryUsage: Option[MemoryUsage] = None) extends Stat
 
   case class Pid(pid: Int) extends Stat
 
@@ -61,8 +63,9 @@ object ModelX {
       concreteType[TestWSMessage]
 
     implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
+      concreteType[SystemStatsUpdate].
       concreteType[Stat].
-      concreteType[SystemStats].
+      concreteType[SystemStatsLine].
       concreteType[Pid].
       concreteType[Cpu].
       concreteType[Time].
