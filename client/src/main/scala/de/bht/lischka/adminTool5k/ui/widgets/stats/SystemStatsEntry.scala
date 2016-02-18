@@ -1,13 +1,12 @@
 package de.bht.lischka.adminTool5k.ui.widgets.stats
 
 import akka.actor.{Actor, Props}
-import de.bht.lischka.adminTool5k.ModelX.SystemStatsLine
+import de.bht.lischka.adminTool5k.ModelX.{SystemStatsUpdate, SystemStatsLine}
 import org.scalajs.jquery.{jQuery => jQ}
 import rx._
 
 object SystemStatsEntry {
   def props(systemStats: SystemStatsLine) = Props(new SystemStatsEntry(systemStats))
-  case class UpdateEntry(systemStats: SystemStatsLine)
 }
 
 class SystemStatsEntry(systemStats: SystemStatsLine) extends Actor {
@@ -20,11 +19,12 @@ class SystemStatsEntry(systemStats: SystemStatsLine) extends Actor {
   }
 
   def receive: Receive = {
-    case UpdateEntry(systemStatsUpdate: SystemStatsLine) =>
-      if(systemStats.pid == systemStatsUpdate.pid) {
-        view.stats() = systemStatsUpdate
+    case SystemStatsUpdate(systemStatsUpdate: SystemStatsLine) =>
+      if(systemStats.pid != systemStatsUpdate.pid) {
+        throw new RuntimeException(s"Received UpdateEntry where PID ${systemStats.pid} doesn't match")
       }
+      view.stats() = systemStatsUpdate
 
-    case _ => println("Hit default case in view")
+    case default => throw new RuntimeException(s"SystemStats entry got a message that doesn't interest him (${default})")
   }
 }

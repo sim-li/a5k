@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.ui.widgets.commandlist.ShellCommandEntry
-import de.bht.lischka.adminTool5k.ui.widgets.stats.SystemStatsEntry
+import de.bht.lischka.adminTool5k.ui.widgets.stats.{SystemStatsSection, SystemStatsEntry}
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
@@ -18,11 +18,11 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   import MainScreen._
 
   var commandEntries: Map[UUID, ActorRef] = Map()
+  var systemStatsSection: ActorRef =  context.actorOf(SystemStatsSection.props, "system-stats-section")
 
   override def preStart: Unit = {
     registerCallback()
     router ! RegisterListener(self)
-    context.actorOf(SystemStatsEntry.props(SystemStatsLine()), "system-stats-section")
   }
 
   def registerCallback() = {
@@ -37,7 +37,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
   // View must handle incomming msgs when logged out for command replay
   def commonOps: Receive = {
-    case SystemStatsUpdate(s) =>
+    case SystemStatsUpdate(update) => systemStatsSection ! SystemStatsUpdate(update)
 
 
     //@TODO ShowExecuteCommand?

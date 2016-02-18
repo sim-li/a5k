@@ -1,13 +1,10 @@
 package de.bht.lischka.adminTool5k.ui.widgets.stats
 
 import java.util.UUID
-
 import akka.actor.{ActorRef, Actor, Props}
 import de.bht.lischka.adminTool5k.ModelX.{Pid, ShellCommand, SystemStatsUpdate, SystemStatsLine}
-import de.bht.lischka.adminTool5k.ui.widgets.commandlist.ShellCommandEntry
 import org.scalajs.jquery.{jQuery => jQ}
 import rx._
-
 import scala.None
 
 object SystemStatsSection {
@@ -19,39 +16,28 @@ class SystemStatsSection() extends Actor {
 
   var statsEntries: Map[Pid, ActorRef] = Map()
 
-  val view  = SystemStatsEntryView(Var(systemStats))
-
-  override def preStart = {
-    jQ("#stats_entry").append(view.render)
-  }
-
   def receive: Receive = {
-    case SystemStatsUpdate(stats: SystemStatsLine) =>
+    case SystemStatsUpdate(systemStatsLine: SystemStatsLine) =>
+      systemStatsLine.pid match {
+        case Some(pid) => statsEntries.get (pid) match {
+            case Some(entry: ActorRef) => updateEntry(entry, systemStatsLine)
 
-
-    case UpdateEntry(systemStatsUpdate: SystemStatsLine) =>
-      systemStatsUpdate.pid match {
-        case Some(pid) =>
-          if(statsEntries.contains(pid)) {
-            statsEntries // UPDATE BLA BLA
-          } else {
-            addSystemStatsEntry(pid, systemStatsUpdate)
-          }
+            case None => addSystemStatsEntry(pid, systemStatsLine)
+        }
+        case None => throw new RuntimeException(s"Got update entry command without PID")
       }
-
-      if(systemStats.pid == systemStatsUpdate.pid) {
-        view.stats() = systemStatsUpdate
-      }
-    case _ => println("Hit default case in view")
   }
 
-  def addSystemStatsEntry(pid: Pid, systemStatsUpdate: SystemStatsLine): Unit = {
-    systemStatsUpdate.pid match {
+  def updateEntry(entry: ActorRef, systemStatsLine: SystemStatsLine): Unit = {
+    entry ! SystemStatsUpdate(systemStatsLine)
+  }
+
+  def addSystemStatsEntry(pid: Pid, systemStatsLine: SystemStatsLine): Unit = {
+    systemStatsLine.pid match {
       case Some(pid) =>
-        statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsUpdate))
+        statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
       case None  =>
         throw new RuntimeException
     }
-
   }
 }

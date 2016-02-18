@@ -1,6 +1,7 @@
 package de.bht.lischka.adminTool5k.ws
 
 import akka.actor.{Actor, Props}
+import de.bht.lischka.adminTool5k.ws.WebsocketProxyClient.{Error, ConnectionClosed, ReceiveMessage, ConnectionEstablished}
 import org.scalajs.dom
 import org.scalajs.dom._
 
