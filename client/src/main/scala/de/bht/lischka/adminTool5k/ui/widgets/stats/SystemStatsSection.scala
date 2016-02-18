@@ -18,14 +18,11 @@ class SystemStatsSection() extends Actor {
 
   def receive: Receive = {
     case SystemStatsUpdate(systemStatsLine: SystemStatsLine) =>
-      systemStatsLine.pid match {
-        case Some(pid) => statsEntries.get (pid) match {
-            case Some(entry: ActorRef) => updateEntry(entry, systemStatsLine)
+      val pid = systemStatsLine.pid
+      statsEntries.get (pid) match {
+        case Some(entry: ActorRef) => updateEntry(entry, systemStatsLine)
 
-            case None => addSystemStatsEntry(pid, systemStatsLine)
-        }
-        case None => throw new RuntimeException(s"Got update entry command without PID")
-      }
+        case None => addSystemStatsEntry(pid, systemStatsLine)
   }
 
   def updateEntry(entry: ActorRef, systemStatsLine: SystemStatsLine): Unit = {
@@ -33,11 +30,7 @@ class SystemStatsSection() extends Actor {
   }
 
   def addSystemStatsEntry(pid: Pid, systemStatsLine: SystemStatsLine): Unit = {
-    systemStatsLine.pid match {
-      case Some(pid) =>
         statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
-      case None  =>
-        throw new RuntimeException
     }
   }
 }

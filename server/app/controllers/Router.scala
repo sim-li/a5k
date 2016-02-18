@@ -18,6 +18,7 @@ object Router {
 class Router extends Actor {
   var registeredReceivers: List[ActorRef] = List()
   var replay: List[SendMessage] = List()
+  var systemStatsSection = context.actorOf(PidParser.props(self))
 
   def forwardMsgToAllSessions(message: Any, ignoredReceiver: ActorRef) = {
     println("Forwarding to all sessions")
@@ -48,11 +49,11 @@ class Router extends Actor {
           println("Execute command called")
           val msg = SendMessage(ExecuteCommand(shellCommand))
           self ! ForwardToAllSessions(msg, sender())
-          self ! ForwardToAllSessions(SendMessage(SystemStatsUpdate(SystemStatsLine("Hello Kitty",   Some(Pid(10))))), self)
-          self ! ForwardToAllSessions(SendMessage(SystemStatsUpdate(SystemStatsLine("Mellow Flitty", Some(Pid(11))))), self)
           self ! RememberForReplay(msg)
           val commandExecutor = context.actorOf(CommandExecutor.props(resultHandler = self))
           commandExecutor ! ExecuteCommand(shellCommand)
+
+        case systemStatsUpdate: SystemStatsUpdate => forwardMsgToAllSessions(SendMessage(systemStatsUpdate), self)
 
         case anything => println(s"Triggered default case in Router, got ${anything}")
       }

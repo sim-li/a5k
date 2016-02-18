@@ -13,23 +13,24 @@ object SystemStatsEntryView {
 class SystemStatsEntryView(val stats: Var[SystemStatsLine]) {
   import rx._
 
-  def RxGetOrElseEmpty(stat: Option[Stat]) = Rx {
+  def RxGetOrElseEmpty[T](stat: Option[T]) = Rx {
     val noDataJet = ""
     stat.getOrElse(noDataJet).toString()
   }
 
-  val processName: Rx[String] = Rx { stats().processName }
+  val processName: Rx[String] = RxGetOrElseEmpty[String] { stats().processName }
 
-  val pid: Rx[String] = RxGetOrElseEmpty { stats().pid }
+  val pid: Rx[String] = Rx { stats().pid.toString }
 
-  val cpu: Rx[String] = RxGetOrElseEmpty { stats().cpu }
+  val cpu: Rx[String] = RxGetOrElseEmpty[Stat] { stats().cpu }
 
-  val time: Rx[String] = RxGetOrElseEmpty { stats().time }
+  val time: Rx[String] = RxGetOrElseEmpty[Stat] { stats().time }
 
-  val memoryUsage: Rx[String] = RxGetOrElseEmpty { stats().memoryUsage }
+  val memoryUsage: Rx[String] = RxGetOrElseEmpty[Stat] { stats().memoryUsage }
 
   val systemStatsSection = tr(
     td(pid),
+    // Expect js dom modifier. What's that, actually?
     td(processName),
     td(cpu),
     td(time),

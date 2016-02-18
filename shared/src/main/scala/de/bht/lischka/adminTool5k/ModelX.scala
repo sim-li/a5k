@@ -37,8 +37,8 @@ object ModelX {
 
   case class SystemStatsUpdate(stats: SystemStatsLine) extends WSMessage
 
-  case class SystemStatsLine(processName: String = "",
-                             pid: Option[Pid] = None,
+  case class SystemStatsLine(pid: Pid,
+                             processName: Option[String] = None,
                              cpu: Option[Cpu] = None,
                              time: Option[Time] = None,
                              memoryUsage: Option[MemoryUsage] = None) extends Stat
