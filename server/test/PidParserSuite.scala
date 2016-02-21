@@ -1,5 +1,8 @@
 package controllers
 
+import java.util.Date
+
+import de.bht.lischka.adminTool5k.ModelX._
 import utest._
 import controllers.pidparsing.PidParsingUtils
 
@@ -39,18 +42,42 @@ object PidParserSuite extends utest.TestSuite {
 
   def tests = TestSuite {
     'PidParserTest {
-      'RegexTest {
-        val expected =  Array("PID", "COMMAND", "%CPU", "TIME", "#TH", "#WQ", "#PORT", "MEM", "PURG", "CMPRS", "PGRP")
-        val pattern = "(?m)PID.+".r
-        val actual: Array[String] = pattern.findFirstIn(pidFakeInput) match {
-          case Some(l: String) => l.split(" ").filter(field => !field.isEmpty())
-          case None => Array[String]()
+      'PidParsingUtilsTest {
+        'ParseTitleLineTest {
+          val expected = Array("PID", "COMMAND", "%CPU", "TIME", "#TH", "#WQ", "#PORT", "MEM", "PURG", "CMPRS", "PGRP")
+          val actual: Array[String] = new PidParsingUtils().parseTitleLine(pidFakeInput)
+          assertArraysEqual(actual, expected)
         }
-        assertArraysEqual(actual, expected)
+
+        'GetRowsTest {
+          val input =
+            """
+              7515  top          2.6   00:04.27 1/1   0    21    2168K  0B     228K   7515
+              7511  bash         0.0   00:00.02 1     0    17    44K    0B     632K   7511
+            """
+          val expected = List(
+            SystemStatsLine(
+              Pid(7515),
+              Some("top"),
+              Some(Cpu(2.6)),
+              Some(Time(new Date()))),
+              Some(MemoryUsage(2168))   //@TODO: Convert if other unit than K, write testcase for "M"
+            ),
+            SystemStatsLine(
+              Pid(7511),
+              Some("bash"),
+              Some(Cpu(0.0)),
+              Some(Time(new Date())),
+              Some(MemoryUsage(44)
+              )
+            )
+        }
+        //@TODO: Write assertion that compares this list to another list of SystemStatsLines containing the result!
+        //@TODO: Check for correct format
+        //@TODO: Check for right ammount of fields, or implement some more intelligent field parsing algorithm.
       }
     }
   }
-
 
   def assertArraysEqual(a: Array[String], b: Array[String]): Unit = {
     for (i <- 0 to a.length - 1) {
