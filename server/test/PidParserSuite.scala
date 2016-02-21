@@ -45,7 +45,7 @@ object PidParserSuite extends utest.TestSuite {
       'PidParsingUtilsTest {
         'ParseTitleLineTest {
           val expected = Array("PID", "COMMAND", "%CPU", "TIME", "#TH", "#WQ", "#PORT", "MEM", "PURG", "CMPRS", "PGRP")
-          val actual: Array[String] = new PidParsingUtils().parseTitleLine(pidFakeInput)
+          val actual: Array[String] = new PidParsingUtils(pidFakeInput).parseTitleLine
           assertArraysEqual(actual, expected)
         }
 
@@ -60,7 +60,7 @@ object PidParserSuite extends utest.TestSuite {
               Pid(7515),
               Some("top"),
               Some(Cpu(2.6)),
-              Some(Time(new Date()))),
+              Some(Time(new Date())),
               Some(MemoryUsage(2168))   //@TODO: Convert if other unit than K, write testcase for "M"
             ),
             SystemStatsLine(
@@ -70,7 +70,12 @@ object PidParserSuite extends utest.TestSuite {
               Some(Time(new Date())),
               Some(MemoryUsage(44)
               )
-            )
+            ))
+          val actual = new PidParsingUtils(pidFakeInput).rows match {
+            case Some(res) => assert(res == expected)
+            case None => assert(false)
+          }
+
         }
         //@TODO: Write assertion that compares this list to another list of SystemStatsLines containing the result!
         //@TODO: Check for correct format
