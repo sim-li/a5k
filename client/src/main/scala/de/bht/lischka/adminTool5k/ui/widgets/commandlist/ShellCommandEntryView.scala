@@ -1,6 +1,6 @@
 package de.bht.lischka.adminTool5k.ui.widgets.commandlist
 
-import de.bht.lischka.adminTool5k.ModelX.ShellCommand
+import de.bht.lischka.adminTool5k.ModelX.{WSMessage, ShellCommand}
 import de.bht.lischka.adminTool5k.ui.BootstrapCSS
 import rx._
 

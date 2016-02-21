@@ -3,6 +3,7 @@ import java.util.Date
 import javax.management.modelmbean.RequiredModelMBean
 import akka.actor.{Actor, Props, ActorRef}
 import controllers.Router.{RememberForReplay, ForwardToAllSessions, TestListReceivers}
+import controllers.pidparsing.PidParser
 import de.bht.lischka.adminTool5k.InternalMessages.{RequestReplay, SendMessage, RegisterListener}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.Session
