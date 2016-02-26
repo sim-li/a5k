@@ -3,6 +3,7 @@ package controllers
 import java.util.Date
 
 import de.bht.lischka.adminTool5k.ModelX._
+import de.bht.lischka.adminTool5k.extractors.PidMatcher
 import utest._
 import controllers.pidparsing.PidParsingUtils
 
@@ -17,7 +18,7 @@ object PidParserSuite extends utest.TestSuite {
     Networks: packets: 3633201/4830M in, 2020206/203M out.
     Disks: 1333452/28G read, 506568/22G written.
 
-      PID   COMMAND      %CPU  TIME     #TH   #WQ  #PORT MEM    PURG   CMPRS  PGRP
+    PID   COMMAND      %CPU  TIME     #TH   #WQ  #PORT MEM    PURG   CMPRS  PGRP
     7515  top          2.6   00:04.27 1/1   0    21    2168K  0B     228K   7515
     7511  bash         0.0   00:00.02 1     0    17    44K    0B     632K   7511
     7510  login        0.0   00:00.19 2     0    28    508K   0B     836K   7510
@@ -40,48 +41,163 @@ object PidParserSuite extends utest.TestSuite {
     7237  Spotify      0.0   01:03.25 34    0    445   9112K  0B     51M    7237
   """"
 
+  val utils = PidParsingUtils(pidFakeInput)
+
   def tests = TestSuite {
     'PidParserTest {
       'PidParsingUtilsTest {
-        'ParseTitleLineTest {
+        def assertColumnTitles(actual: Array[String]) = {
           val expected = Array("PID", "COMMAND", "%CPU", "TIME", "#TH", "#WQ", "#PORT", "MEM", "PURG", "CMPRS", "PGRP")
-          val actual: Array[String] = new PidParsingUtils(pidFakeInput).parseTitleLine
           assertArraysEqual(actual, expected)
         }
 
-        'GetRowsTest {
-          val input =
-            """
-              7515  top          2.6   00:04.27 1/1   0    21    2168K  0B     228K   7515
-              7511  bash         0.0   00:00.02 1     0    17    44K    0B     632K   7511
-            """
-          val expected = List(
-            SystemStatsLine(
-              Pid(7515),
-              Some("top"),
-              Some(Cpu(2.6)),
-              Some(Time(new Date())),
-              Some(MemoryUsage(2168))   //@TODO: Convert if other unit than K, write testcase for "M"
-            ),
-            SystemStatsLine(
-              Pid(7511),
-              Some("bash"),
-              Some(Cpu(0.0)),
-              Some(Time(new Date())),
-              Some(MemoryUsage(44)
-              )
-            ))
-          val actual = new PidParsingUtils(pidFakeInput).rows match {
-            case Some(res) => assert(res == expected)
-            case None => assert(false)
+        def stringFromOptionEqOtherString(string1: Option[String], string2: String): Boolean = {
+          string1 match {
+            case Some(s) => s == string2
+            case None => false
           }
-
         }
+
+        'ParseNormalLineTest {
+          assertArraysEqual(
+            utils.dataColumns("7515  top          2.6   00:04.27 1/1   0    21    2168K  0B     228K   7515")
+            ,Array[String]("7515", "top", "2.6", "00:04.27", "1/1", "0", "21", "2168K", "0B", "228K", "7515")
+          )
+        }
+
+        'ParseTitleLineTest {
+          assertColumnTitles(PidParsingUtils.titleColumns(pidFakeInput))
+        }
+
+        def assertMemoryUsage(usage: MemoryUsage, expected: MemoryUsage): Unit = {
+          usage match {
+            case MemoryUsage(u: Double) =>
+              assert(u == expected.usage)
+            case _ =>
+              assert(false)
+          }
+        }
+
+        'ParseMemoryFieldFromKBWithPlusEnding {
+          assertMemoryUsage(utils.memoryUsage("1024K+"), MemoryUsage(1024.0 * 1024))
+        }
+
+        'ParseMemoryFieldFromKBWithMinusEnding {
+          assertMemoryUsage(utils.memoryUsage("1024K-"), MemoryUsage(1024.0 * 1024))
+        }
+
+        'ParseMemoryFieldFromKB {
+          assertMemoryUsage(utils.memoryUsage("1024B"), MemoryUsage(1024.0))
+        }
+
+        'ParseMemoryFieldFromKB1 {
+          assertMemoryUsage(utils.memoryUsage("1024K"), MemoryUsage(1024.0 * 1024))
+        }
+
+        'ParseMemoryFieldFromKB2 {
+          assertMemoryUsage(utils.memoryUsage("2048K"), MemoryUsage(2048.0 * 1024))
+        }
+
+
+        'ParseMemoryFieldFromMB {
+          assertMemoryUsage(utils.memoryUsage("2048M"), MemoryUsage(2048.0 * 1024 * 1024))
+        }
+
+        'ParseMemoryFieldFromG {
+          assertMemoryUsage(utils.memoryUsage("2048G"), MemoryUsage(2048.0 * 1024 * 1024 * 1024))
+        }
+
+        'ParseMemoryFieldFromT {
+          assertMemoryUsage(utils.memoryUsage("2048T"), MemoryUsage(2048.0 * 1024 * 1024 * 1024 * 1024))
+        }
+
+        'ExtractorExperimentTest {
+          val pid: Option[Pid] = ("PID", "123") match {
+            case PidMatcher(id) => Some(Pid(id))
+            case _ => None
+          }
+          pid match {
+            case Some(pid: Pid) => assert(pid.pid == 123)
+            case _ => assert(false)
+          }
+        }
+
+//        'FieldsFromCompleteColumn1 {
+//          val correctlyFormattedLine = """
+//          7515  top          2.6   00:04.27 1/1   0    21    2168K  0B     228K   7515
+//          """
+//          val utils = new PidParsingUtils(pidFakeInput)
+//          assertSystemStatsLinesEqual(
+//            utils.fieldsFromLine(correctlyFormattedLine),
+//            SystemStatsLine(
+//              pid = Pid(7515),
+//              processName = Some(ProcessName("top")),
+//              cpu = Some(Cpu(2.6)),
+//              time = Some(Time("00:04.27")),
+//              memoryUsage = Some(MemoryUsage(2220032))
+//            )
+//          )
+//        }
+
+//        'FieldsFromCompleteColumn2 {
+//          val correctlyFormattedLine = """
+//          7269  plugin-conta 0.8   02:53.00 20    0    274   12M+   0B     70M-   3456
+//          """
+//          val utils = new PidParsingUtils(pidFakeInput)
+//          assertSystemStatsLinesEqual(
+//            utils.fieldsFromLine(correctlyFormattedLine),
+//            SystemStatsLine(
+//              pid = Pid(7269),
+//              processName = Some(ProcessName("plugin-conta")),
+//              cpu = Some(Cpu(0.8)),
+//              time = Some(Time("02:53.00")),
+//              memoryUsage = Some(MemoryUsage(12 * 1024 * 1024))
+//            )
+//          )
+//        }
+//        'GetRowsTest {
+//          val input =
+//            """
+//              7515  top          2.6   00:04.27 1/1   0    21    2168K  0B     228K   7515
+//              7511  bash         0.0   00:00.02 1     0    17    44K    0B     632K   7511
+//            """
+//          val expected = List(
+//            SystemStatsLine(
+//              Pid(7515),
+//              Some("top"),
+//              Some(Cpu(2.6)),
+//              Some(Time(new Date())),
+//              Some(MemoryUsage(2168))   //@TODO: Convert if other unit than K, write testcase for "M"
+//            ),
+//            SystemStatsLine(
+//              Pid(7511),
+//              Some("bash"),
+//              Some(Cpu(0.0)),
+//              Some(Time(new Date())),
+//              Some(MemoryUsage(44)
+//              )
+//            ))
+//          val actual = new PidParsingUtils(pidFakeInput).rows match {
+//            case Some(res) => assert(res == expected)
+//            case None => assert(false)
+//          }
+//
+//        }
         //@TODO: Write assertion that compares this list to another list of SystemStatsLines containing the result!
         //@TODO: Check for correct format
         //@TODO: Check for right ammount of fields, or implement some more intelligent field parsing algorithm.
       }
     }
+  }
+
+  def assertSystemStatsLinesEqual(actual: SystemStatsLine, expected: SystemStatsLine): Unit = {
+    assert(
+      expected.pid == actual.pid,
+      expected.processName == actual.processName,
+      expected.cpu == actual.cpu,
+      expected.time == actual.time,
+      expected.memoryUsage == actual.memoryUsage
+    )
   }
 
   def assertArraysEqual(a: Array[String], b: Array[String]): Unit = {

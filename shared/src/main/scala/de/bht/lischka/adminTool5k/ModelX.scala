@@ -1,6 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import java.util.{UUID, Date}
+import de.bht.lischka.adminTool5k.ModelX.Stat
 import prickle.{CompositePickler, PicklerPair}
 
 object ModelX {
@@ -38,16 +39,18 @@ object ModelX {
   case class SystemStatsUpdate(stats: SystemStatsLine) extends WSMessage
 
   case class SystemStatsLine(pid: Pid,
-                             processName: Option[String] = None,
+                             processName: Option[ProcessName] = None,
                              cpu: Option[Cpu] = None,
                              time: Option[Time] = None,
                              memoryUsage: Option[MemoryUsage] = None) extends Stat
 
   case class Pid(pid: Int) extends Stat
 
+  case class ProcessName(name: String) extends Stat
+
   case class Cpu(usage: Double) extends Stat
 
-  case class Time(time: Date) extends Stat
+  case class Time(time: String) extends Stat
 
   case class MemoryUsage(usage: Double) extends Stat
 

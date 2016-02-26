@@ -22,9 +22,9 @@ class PidParser(resultHandler: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case TimeToUpdate =>
-      resultHandler ! SystemStatsUpdate(SystemStatsLine(Pid(1), Some("La Macarena"), randomCpuStat))
-      resultHandler ! SystemStatsUpdate(SystemStatsLine(Pid(2), Some("Los Vallcarca Surf"), randomCpuStat))
-      resultHandler ! SystemStatsUpdate(SystemStatsLine(Pid(3), Some("Rangbang"), randomCpuStat))
+      resultHandler ! SystemStatsUpdate(SystemStatsLine(Pid(1), Some(ProcessName("La Macarena")), randomCpuStat))
+      resultHandler ! SystemStatsUpdate(SystemStatsLine(Pid(2), Some(ProcessName("Los Vallcarca Surf")), randomCpuStat))
+      resultHandler ! SystemStatsUpdate(SystemStatsLine(Pid(3), Some(ProcessName("Rangbang")), randomCpuStat))
   }
 
   def randomCpuStat = Some(Cpu(r.nextDouble()))

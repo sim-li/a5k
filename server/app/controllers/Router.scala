@@ -22,7 +22,7 @@ class Router extends Actor {
   var systemStatsSection = context.actorOf(PidParser.props(self))
 
   def forwardMsgToAllSessions(message: Any, ignoredReceiver: ActorRef) = {
-    println("Forwarding to all sessions")
+    println(s"Forwarding to all sessions ${message}")
     registeredReceivers.filter(_ != ignoredReceiver).foreach(_ ! message)
   }
 
