@@ -1,11 +1,10 @@
 package de.bht.lischka.adminTool5k.extractors
 
+import scala.util.Try
+
 object PidMatcher {
-  def unapply(identifierAndvalue: (String, String)): Option[Int] = identifierAndvalue match {
-    case ("PID", value) => Option(value.toInt) match {
-      case Some(v: Int) => Some(v)
-      case None => None
-    }
+  def unapply(identifierAndValue: (String, String)): Option[Int] = identifierAndValue match {
+    case ("PID", value) => Try(Some(value.toInt)).getOrElse(None)
     case _ => None
   }
 }

@@ -52,7 +52,7 @@ object ModelX {
 
   case class Time(time: String) extends Stat
 
-  case class MemoryUsage(usage: Double) extends Stat
+  case class MemoryUsage(usage: Long) extends Stat
 
   object Picklers {
     implicit def basicPickler: PicklerPair[WSMessage] = CompositePickler[WSMessage].

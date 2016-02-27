@@ -33,27 +33,15 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
         case PidMatcher(id) => pid = Some(Pid(id))
       }
     }
-    if (!pid) {
+    if (!pid.isDefined) {
       return None
     }
-    for (column <- columnsForOneLine) {
-      column match {
-      }
-    }
-    SystemStatsLine(Pid(7515), Some(ProcessName("top")), Some(Cpu(2.6)), Some(Time("00:04.27")), Some(MemoryUsage(2220032)))
-  }
-
-  def memoryUsage(memColumn: String): MemoryUsage = {
-    val Regex = """([0-9]+)([KkMmBbGgTt])[+-]*""".r
-    val Regex(mem: String, unit: String) = memColumn
-    val multiplicator = unit match {
-      case "B" => 1.0
-      case "K" => 1024.0
-      case "M" => 1024.0 * 1024
-      case "G" => 1024.0 * 1024 * 1024
-      case "T" => 1024.0 * 1024 * 1024 * 1024 //@TODO: CHECK if G and T symbol are really commmon in top
-    }
-    MemoryUsage(mem.toDouble * multiplicator)
+//    for (column <- columnsForOneLine) {
+//      column match {
+//        case
+//      }
+//    }
+    Some(SystemStatsLine(Pid(7515), Some(ProcessName("top")), Some(Cpu(2.6)), Some(Time("00:04.27")), Some(MemoryUsage(2220032))))
   }
 }
 

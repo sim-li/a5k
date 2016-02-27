@@ -1,7 +1,5 @@
 package controllers
 
-import java.util.Date
-
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.extractors.PidMatcher
 import utest._
@@ -67,59 +65,6 @@ object PidParserSuite extends utest.TestSuite {
 
         'ParseTitleLineTest {
           assertColumnTitles(PidParsingUtils.titleColumns(pidFakeInput))
-        }
-
-        def assertMemoryUsage(usage: MemoryUsage, expected: MemoryUsage): Unit = {
-          usage match {
-            case MemoryUsage(u: Double) =>
-              assert(u == expected.usage)
-            case _ =>
-              assert(false)
-          }
-        }
-
-        'ParseMemoryFieldFromKBWithPlusEnding {
-          assertMemoryUsage(utils.memoryUsage("1024K+"), MemoryUsage(1024.0 * 1024))
-        }
-
-        'ParseMemoryFieldFromKBWithMinusEnding {
-          assertMemoryUsage(utils.memoryUsage("1024K-"), MemoryUsage(1024.0 * 1024))
-        }
-
-        'ParseMemoryFieldFromKB {
-          assertMemoryUsage(utils.memoryUsage("1024B"), MemoryUsage(1024.0))
-        }
-
-        'ParseMemoryFieldFromKB1 {
-          assertMemoryUsage(utils.memoryUsage("1024K"), MemoryUsage(1024.0 * 1024))
-        }
-
-        'ParseMemoryFieldFromKB2 {
-          assertMemoryUsage(utils.memoryUsage("2048K"), MemoryUsage(2048.0 * 1024))
-        }
-
-
-        'ParseMemoryFieldFromMB {
-          assertMemoryUsage(utils.memoryUsage("2048M"), MemoryUsage(2048.0 * 1024 * 1024))
-        }
-
-        'ParseMemoryFieldFromG {
-          assertMemoryUsage(utils.memoryUsage("2048G"), MemoryUsage(2048.0 * 1024 * 1024 * 1024))
-        }
-
-        'ParseMemoryFieldFromT {
-          assertMemoryUsage(utils.memoryUsage("2048T"), MemoryUsage(2048.0 * 1024 * 1024 * 1024 * 1024))
-        }
-
-        'ExtractorExperimentTest {
-          val pid: Option[Pid] = ("PID", "123") match {
-            case PidMatcher(id) => Some(Pid(id))
-            case _ => None
-          }
-          pid match {
-            case Some(pid: Pid) => assert(pid.pid == 123)
-            case _ => assert(false)
-          }
         }
 
 //        'FieldsFromCompleteColumn1 {
