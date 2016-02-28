@@ -42,19 +42,26 @@ object TimeMatcherSuite extends utest.TestSuite {
       )
     }
 
+    'ExtractorTestPositive {
+      ("TIME", "22:00.00") match {
+        case TimeMatcher(time: Duration) => assert(time == Duration(1320000, MILLISECONDS))
+        case _ => assert(false)
+      }
+    }
 
-//    'ExtractorTestPositive {
-//      ("TIME", "TestApp") match {
-//        case ProcessNameMatcher(name: String) => assert(name == "TestApp")
-//        case _ => assert(false)
-//      }
-//    }
-//
-//    'ExtractorTestNegative {
-//      ("XYZ", "TestApp") match {
-//        case ProcessNameMatcher(name: String) => assert(false)
-//        case _ => assert(true)
-//      }
-//    }
+    'ExtractorTestNegative1 {
+      ("XYZ", "22:00.00") match {
+        case TimeMatcher(time: Duration) => assert(false)
+        case _ => assert(true)
+      }
+    }
+
+    'ExtractorTestNegative2 {
+      ("TIME", "XX:00.yy") match {
+        case TimeMatcher(time: Duration) => assert(false)
+        case _ => assert(true)
+      }
+    }
+
   }
 }

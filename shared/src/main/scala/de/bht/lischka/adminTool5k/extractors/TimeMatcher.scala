@@ -4,6 +4,8 @@ import scala.concurrent.duration._
 import scala.util.Try
 
 object TimeMatcher {
+  //@TODO: Reduce nested match statement if possible
+  //@TODO: Is usage of tuples really necessary?
   def convertTopTimeToDuration(topTimeExpr: String): Option[Duration] = {
     val TopDuration = """([0-9]?[0-9]):([0-9]?[0-9]).([0-9]?[0-9])""".r
     topTimeExpr match {
@@ -28,11 +30,9 @@ object TimeMatcher {
     Try(Some(functionWithException())).getOrElse(None)
   }
 
-  def unapply(identifierAndValue: (String, String)): Option[String] = identifierAndValue match {
-    case ("TIME", value) => Option(value) match {
-      case Some(v: String) => Some(v)
-      case None => None
-    }
+  def unapply(identifierAndValue: (String, String)): Option[Duration] = identifierAndValue match {
+    case ("TIME", value) => convertTopTimeToDuration(value)
     case _ => None
   }
+
 }

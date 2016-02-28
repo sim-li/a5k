@@ -5,7 +5,7 @@ import utest._
 object CpuMatcherSuite extends utest.TestSuite {
   def tests = TestSuite {
     'ExtractorTestPositive {
-      ("CPU", "123.123") match {
+      ("%CPU", "123.123") match {
         case CpuMatcher(usage: Double) => assert(usage == 123.123)
         case _ => assert(false)
       }

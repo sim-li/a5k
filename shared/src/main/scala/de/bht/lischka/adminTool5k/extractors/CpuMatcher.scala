@@ -4,7 +4,7 @@ import scala.util.Try
 
 object CpuMatcher {
   def unapply(identifierAndvalue: (String, String)): Option[Double] = identifierAndvalue match {
-    case ("CPU", value) => Try(Some(value.toDouble)).getOrElse(None)
+    case ("%CPU", value) => Try(Some(value.toDouble)).getOrElse(None)
     case _ => None
   }
 }
