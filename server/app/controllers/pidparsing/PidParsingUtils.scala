@@ -3,6 +3,8 @@ package controllers.pidparsing
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.extractors.PidMatcher
 
+import scala.concurrent.duration._
+
 object PidParsingUtils {
   val pattern = "(?m)PID.+".r
 
@@ -41,7 +43,7 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
 //        case
 //      }
 //    }
-    Some(SystemStatsLine(Pid(7515), Some(ProcessName("top")), Some(Cpu(2.6)), Some(Time("00:04.27")), Some(MemoryUsage(2220032))))
+    Some(SystemStatsLine(Pid(7515), Some(ProcessName("top")), Some(Cpu(2.6)), Some(TimeAlive(Duration(1000, MILLISECONDS))), Some(MemoryUsage(2220032))))
   }
 }
 

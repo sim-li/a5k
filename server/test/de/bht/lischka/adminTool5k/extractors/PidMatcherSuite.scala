@@ -1,10 +1,6 @@
-package de.bht.lischka.adminTool5k
+package de.bht.lischka.adminTool5k.extractors
 
-import de.bht.lischka.adminTool5k.ModelX.{Pid, MemoryUsage}
-import de.bht.lischka.adminTool5k.extractors.{PidMatcher, MemoryUsageMatcher}
 import utest._
-
-import scala.util.Try
 
 //@TODO: Fix shared tests
 //@TODO: Move this to shared tests

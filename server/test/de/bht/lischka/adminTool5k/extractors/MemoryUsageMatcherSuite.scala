@@ -1,5 +1,5 @@
-import de.bht.lischka.adminTool5k.ModelX.{Pid, MemoryUsage}
-import de.bht.lischka.adminTool5k.extractors.{PidMatcher, MemoryUsageMatcher}
+package de.bht.lischka.adminTool5k.extractors
+
 import utest._
 
 //@TODO: Fix shared tests
@@ -46,12 +46,8 @@ object MemoryUsageMatcherSuite extends utest.TestSuite {
     }
 
     'MemExtractorTestNoUnit {
-      val mem: Option[MemoryUsage] = ("MEM", "123") match {
-        case MemoryUsageMatcher(mem: Long) => Some(MemoryUsage(mem))
-        case _ => None
-      }
-      mem match {
-        case Some(mem: MemoryUsage) => assert(mem.usage == 123L)
+      ("MEM", "123") match {
+        case MemoryUsageMatcher(mem: Long) => assert(mem == 123L)
         case _ => assert(false)
       }
     }
@@ -79,12 +75,8 @@ object MemoryUsageMatcherSuite extends utest.TestSuite {
     }
 
     def assertExtractor(memoryExpressionInput: String, expectedUsage: Long) = {
-      val mem: Option[MemoryUsage] = ("MEM", memoryExpressionInput) match {
-        case MemoryUsageMatcher(mem: Long) => Some(MemoryUsage(mem))
-        case _ => None
-      }
-      mem match {
-        case Some(mem: MemoryUsage) => assert(mem.usage == expectedUsage)
+      ("MEM", memoryExpressionInput) match {
+        case MemoryUsageMatcher(mem: Long) => assert(mem == expectedUsage)
         case _ => assert(false)
       }
     }

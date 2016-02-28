@@ -1,5 +1,4 @@
 package de.bht.lischka.adminTool5k.extractors
-
 import de.bht.lischka.adminTool5k.ModelX.MemoryUsage
 
 object MemoryUsageMatcher {
@@ -11,8 +10,8 @@ object MemoryUsageMatcher {
   }
 
   def memoryUsage(memColumn: String): Option[Long] = {
-    val Regex = """([0-9]+)([KkMmBbGgTt]?)[+-]*""".r
-    val Regex(mem: String, unit: String) = memColumn
+    val MemoryUsageAndUnit = """([0-9]+)([KkMmBbGgTt]?)[+-]*""".r
+    val MemoryUsageAndUnit(mem: String, unit: String) = memColumn
     val multiplicator = unit match {
       case ""  => 1L
       case "B" => 1L
