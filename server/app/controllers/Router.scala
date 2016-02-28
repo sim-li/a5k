@@ -22,7 +22,6 @@ class Router extends Actor {
   var systemStatsSection = context.actorOf(PidParser.props(self))
 
   def forwardMsgToAllSessions(message: Any, ignoredReceiver: ActorRef) = {
-    println(s"Forwarding to all sessions ${message}")
     registeredReceivers.filter(_ != ignoredReceiver).foreach(_ ! message)
   }
 
@@ -40,14 +39,12 @@ class Router extends Actor {
     case wsMessage: WSMessage =>
       wsMessage match {
         case CommandResult(cmdResponse)  =>
-          println("Command result called")
           val msg = SendMessage(CommandResult(cmdResponse))
           //@TODO: Remove this way of satisfying function parameters
           self ! ForwardToAllSessions(msg, self)
           self ! RememberForReplay(msg)
 
         case ExecuteCommand(shellCommand) =>
-          println("Execute command called")
           val msg = SendMessage(ExecuteCommand(shellCommand))
           self ! ForwardToAllSessions(msg, sender())
           self ! RememberForReplay(msg)

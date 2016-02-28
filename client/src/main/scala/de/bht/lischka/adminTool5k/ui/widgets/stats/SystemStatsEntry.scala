@@ -23,7 +23,6 @@ class SystemStatsEntry(systemStats: SystemStatsLine) extends Actor {
       if(systemStats.pid != systemStatsUpdate.pid) {
         throw new RuntimeException(s"Received UpdateEntry where PID ${systemStats.pid} doesn't match")
       }
-      println(s"Got update ${systemStatsUpdate}")
       view.stats() = systemStatsUpdate
 
     case default => throw new RuntimeException(s"SystemStats entry got a message that doesn't interest him (${default})")

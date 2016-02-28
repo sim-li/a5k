@@ -18,11 +18,16 @@ class SystemStatsSection() extends Actor {
 
   def receive: Receive = {
     case SystemStatsUpdate(systemStatsLine: SystemStatsLine) =>
-      val pid = systemStatsLine.pid
-      statsEntries.get (pid) match {
-        case Some(entry: ActorRef) => updateEntry(entry, systemStatsLine)
+      //Unwraps the option
+      systemStatsLine.pid.foreach {
+        pid =>
+          statsEntries.get(pid) match {
+            case Some(entry: ActorRef) => updateEntry(entry, systemStatsLine)
 
-        case None => addSystemStatsEntry(pid, systemStatsLine)
+            case None => addSystemStatsEntry(pid, systemStatsLine)
+          }
+      }
+    case _ => println("Unhandled defualt case")
   }
 
   def updateEntry(entry: ActorRef, systemStatsLine: SystemStatsLine): Unit = {
@@ -31,6 +36,6 @@ class SystemStatsSection() extends Actor {
 
   def addSystemStatsEntry(pid: Pid, systemStatsLine: SystemStatsLine): Unit = {
         statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
-    }
   }
+
 }

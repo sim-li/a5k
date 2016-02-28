@@ -13,15 +13,41 @@ object SystemStatsEntryView {
 class SystemStatsEntryView(val stats: Var[SystemStatsLine]) {
   import rx._
 
-  val processName: Rx[String] = Rx { stats().processName.toString() }
+  //@TODO: Replace this repeptive pattern, switch to actors/jquery
+  val processName: Rx[String] = Rx {
+    stats().processName match {
+      case Some(n) => n.toString
+      case _ => ""
+    }
+  }
 
-  val pid: Rx[String] = Rx { stats().pid.toString }
+  val pid: Rx[String] = Rx {
+    stats().pid match {
+      case Some(p) => p.toString
+      case _ => ""
+    }
+  }
 
-  val cpu: Rx[String] = Rx { stats().cpu.toString }
+  val cpu: Rx[String] = Rx {
+    stats().cpu match {
+      case Some(c) => c.toString
+      case _ => ""
+    }
+  }
 
-  val time: Rx[String] = Rx { stats().time.toString }
+  val time: Rx[String] = Rx {
+    stats().time match {
+      case Some(t) => t.toString
+      case _ => ""
+    }
+  }
 
-  val memoryUsage: Rx[String] = Rx { stats().memoryUsage.toString }
+  val  memoryUsage: Rx[String] = Rx {
+    stats().memoryUsage match {
+      case Some(m) => m.toString
+      case _ => ""
+    }
+  }
 
   val systemStatsSection = tr(
     td(pid),
