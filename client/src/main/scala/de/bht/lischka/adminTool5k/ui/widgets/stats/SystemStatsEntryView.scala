@@ -13,7 +13,7 @@ object SystemStatsEntryView {
 class SystemStatsEntryView(val stats: Var[SystemStatsLine]) {
   import rx._
 
-  //@TODO: Replace this repeptive pattern, switch to actors/jquery
+  //@TODO: Replace this repetitive pattern, switch to actors/jquery
   val processName: Rx[String] = Rx {
     stats().processName match {
       case Some(n) => n.toString

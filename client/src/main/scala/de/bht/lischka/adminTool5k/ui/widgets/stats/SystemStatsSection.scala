@@ -18,24 +18,12 @@ class SystemStatsSection() extends Actor {
 
   def receive: Receive = {
     case SystemStatsUpdate(systemStatsLine: SystemStatsLine) =>
-      //Unwraps the option
-      systemStatsLine.pid.foreach {
-        pid =>
-          statsEntries.get(pid) match {
-            case Some(entry: ActorRef) => updateEntry(entry, systemStatsLine)
-
-            case None => addSystemStatsEntry(pid, systemStatsLine)
-          }
-      }
+      systemStatsLine.pid.foreach(pid => statsEntries.get(pid) match {
+          case Some(l: ActorRef) => l ! SystemStatsUpdate(systemStatsLine)
+          case None => statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
+        }
+      )
     case _ => println("Unhandled defualt case")
-  }
-
-  def updateEntry(entry: ActorRef, systemStatsLine: SystemStatsLine): Unit = {
-    entry ! SystemStatsUpdate(systemStatsLine)
-  }
-
-  def addSystemStatsEntry(pid: Pid, systemStatsLine: SystemStatsLine): Unit = {
-        statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
   }
 
 }
