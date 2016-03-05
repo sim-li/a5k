@@ -75,9 +75,9 @@ object PidParserSuite extends utest.TestSuite {
           val utils = PidParsingUtils(pidFakeInput)
           assertSystemStatsLinesEqual(
             utils.fieldsFromLine(correctlyFormattedLine),
-            SystemStatsLine(
+            Process(
               pid = Some(Pid(7515)),
-              processName = Some(ProcessName("top")),
+              name = Some(ProcessName("top")),
               cpu = Some(Cpu(2.6)),
               time = Some(TimeAlive(Duration(4270, MILLISECONDS))),
               memoryUsage = Some(MemoryUsage(2220032))
@@ -92,9 +92,9 @@ object PidParserSuite extends utest.TestSuite {
           val utils = PidParsingUtils(pidFakeInput)
           assertSystemStatsLinesEqual(
             utils.fieldsFromLine(correctlyFormattedLine),
-            SystemStatsLine(
+            Process(
               pid = Some(Pid(7269)),
-              processName = Some(ProcessName("plugin-conta")),
+              name = Some(ProcessName("plugin-conta")),
               cpu = Some(Cpu(0.8)),
               time = Some(TimeAlive(Duration(173000, MILLISECONDS))),
               memoryUsage = Some(MemoryUsage(12 * 1024 * 1024))
@@ -119,21 +119,21 @@ object PidParserSuite extends utest.TestSuite {
             7510  login        0.0   00:00.19 2     0    28    508K   0B     836K   7510
           """
           val expected = Set(
-            SystemStatsLine(
+            Process(
               Some(Pid(7515)),
               Some(ProcessName("top")),
               Some(Cpu(2.6)),
               Some(TimeAlive(Duration(4270, MILLISECONDS))),
               Some(MemoryUsage(2168 * 1024))   //@TODO: Convert if other unit than K, write testcase for "M"
             ),
-            SystemStatsLine(
+            Process(
               Some(Pid(7511)),
               Some(ProcessName("bash")),
               Some(Cpu(0.0)),
               Some(TimeAlive(Duration(20, MILLISECONDS))),
               Some(MemoryUsage(44 * 1024))
             ),
-            SystemStatsLine(
+            Process(
               Some(Pid(7510)),
               Some(ProcessName("login")),
               Some(Cpu(0.0)),
@@ -148,12 +148,12 @@ object PidParserSuite extends utest.TestSuite {
     }
   }
 
-  def assertSystemStatsLinesEqual(actual: Option[SystemStatsLine], expected: SystemStatsLine): Unit = {
+  def assertSystemStatsLinesEqual(actual: Option[Process], expected: Process): Unit = {
     val a = actual match {
-      case Some(s: SystemStatsLine) =>
+      case Some(s: Process) =>
         assert(
           expected.pid == s.pid,
-          expected.processName == s.processName,
+          expected.name == s.name,
           expected.cpu == s.cpu,
           expected.time == s.time,
           expected.memoryUsage == s.memoryUsage

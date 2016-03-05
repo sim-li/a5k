@@ -37,7 +37,7 @@ class WebsocketProxyClient extends Actor {
 
   def disconnected: Receive = {
     case ConnectionEstablished(socket: dom.WebSocket) => context.become(connected(socket))
-    case other => println(s"Received message ${other} while disconnected")
+    case other => //@TODO: Handle default case
   }
 
   def closed: Receive = {

@@ -20,15 +20,15 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
   def dataColumns(line: String): Array[String] = line.replaceAll("[ ]+", " ").trim.split(" ")
 
   //@TODO: Yuck! Reduce this! Using this series of copy commands can't be performant!
-  def fieldsFromLine(line: String): Option[SystemStatsLine] = {
+  def fieldsFromLine(line: String): Option[Process] = {
     val fieldNamesInExpectedOrder = List("%CPU", "COMMAND", "MEM", "PID", "TIME")
     val fields: Array[(String, String)] = (titleColumnEntries zip dataColumns(line))
       .filter(c => fieldNamesInExpectedOrder.contains(c._1))
       .sorted
-    val constructedLine = (new SystemStatsLine() /: fields)((l: SystemStatsLine, f: (String, String)) =>
+    val constructedLine = (new Process() /: fields)((l: Process, f: (String, String)) =>
       f match {
         case CpuMatcher(usage: Double) => l.copy(cpu=Some(Cpu(usage)))
-        case ProcessNameMatcher(name) => l.copy(processName=Some(ProcessName(name)))
+        case ProcessNameMatcher(name) => l.copy(name=Some(ProcessName(name)))
         case MemoryUsageMatcher(usage: Long) => l.copy(memoryUsage=Some(MemoryUsage(usage)))
         case PidMatcher(pid) => l.copy(pid=Some(Pid(pid)))
         case TimeMatcher(time) => l.copy(time=Some(TimeAlive(time)))
@@ -42,13 +42,12 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
     }
   }
 
-  def rows: List[SystemStatsLine] = {
+  def rows: List[Process] = {
     val interestingPart: String = pidOutput.split(PidParsingUtils.pattern.toString)(1)
-    (List[SystemStatsLine]() /: interestingPart.split("\n")) {
-      (buffer: List[SystemStatsLine], line: String) =>
-        println(line)
+    (List[Process]() /: interestingPart.split("\n")) {
+      (buffer: List[Process], line: String) =>
         fieldsFromLine(line) match {
-          case Some(sysStatsLine: SystemStatsLine) => sysStatsLine :: buffer
+          case Some(sysStatsLine: Process) => sysStatsLine :: buffer
           case _ => buffer
         }
     }

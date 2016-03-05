@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.ui.widgets.commandlist.ShellCommandEntry
-import de.bht.lischka.adminTool5k.ui.widgets.stats.{SystemStatsSection, SystemStatsEntry}
+import de.bht.lischka.adminTool5k.ui.widgets.processes.{ProcessTable}
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
@@ -18,7 +18,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   import MainScreen._
 
   var commandEntries: Map[UUID, ActorRef] = Map()
-  var systemStatsSection: ActorRef =  context.actorOf(SystemStatsSection.props, "system-stats-section")
+  var systemStatsSection: ActorRef =  context.actorOf(ProcessTable.props, "system-stats-section")
 
   override def preStart: Unit = {
     registerCallback()

@@ -42,7 +42,8 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
         case LoginUser(user: User) =>
           self ! LoginUser(user)
 
-        case anyMsg => println(s"Got ${anyMsg} in logged out state")
+        case anyMsg =>
+        //@TODO: Handle defualt case, caution: SystemStatsUpdate flies in with brutal frequency
       }
   }
 

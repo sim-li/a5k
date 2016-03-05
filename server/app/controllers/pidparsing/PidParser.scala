@@ -19,7 +19,7 @@ class PidParser(resultHandler: ActorRef) extends Actor {
   val linuxCommand = "top -bn1"
 
   override def preStart = {
-    context.system.scheduler.schedule(1 seconds, 1 seconds, self, TimeToUpdate)
+    context.system.scheduler.schedule(10 seconds, 10 seconds, self, TimeToUpdate)
   }
 
   override def receive: Receive = {

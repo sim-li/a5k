@@ -15,6 +15,8 @@ import scala.scalajs.js
 import prickle._
 import scala.util.{Failure, Success, Try}
 import org.scalajs.jquery.{jQuery => jQ, _}
+import scalatags.JsDom.all._
+import dom.document
 
 object Application {
   def props() = Props(new Application())
