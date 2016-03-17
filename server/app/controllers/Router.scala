@@ -51,7 +51,7 @@ class Router extends Actor {
           val commandExecutor = context.actorOf(CommandExecutor.props(resultHandler = self))
           commandExecutor ! ExecuteCommand(shellCommand)
 
-        case systemStatsUpdate: SystemStatsUpdate => forwardMsgToAllSessions(SendMessage(systemStatsUpdate), self)
+        case systemStatsUpdate: ProcessUpdate => forwardMsgToAllSessions(SendMessage(systemStatsUpdate), self)
 
         case anything => println(s"Triggered default case in Router, got ${anything}")
       }

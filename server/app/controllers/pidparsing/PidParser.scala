@@ -24,7 +24,7 @@ class PidParser(resultHandler: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case TimeToUpdate => PidParsingUtils(macCommand.!!).rows.map(systemStatsLine =>
-      resultHandler ! SystemStatsUpdate(systemStatsLine))
+      resultHandler ! ProcessUpdate(systemStatsLine))
   }
 
   def randomCpuStat = Some(Cpu(r.nextDouble()))

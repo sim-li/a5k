@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import java.util.{UUID, Date}
-import de.bht.lischka.adminTool5k.ModelX.Stat
+import de.bht.lischka.adminTool5k.ModelX.ProcessInfo
 import prickle.{CompositePickler, PicklerPair}
 
 import scala.concurrent.duration.Duration
@@ -36,25 +36,23 @@ object ModelX {
 
   case class IssueInfo(user: User, id: UUID = UUID.randomUUID(), commandIssued: Date = new Date()) extends DataModel
 
-  trait Stat extends DataModel
+  trait ProcessInfo extends DataModel
 
-  case class SystemStatsUpdate(stats: Process) extends WSMessage
+  case class ProcessUpdate(process: Process) extends WSMessage
 
-  case class Process(pid: Option[Pid] = None,
-                     name: Option[ProcessName] = None,
-                     cpu: Option[Cpu] = None,
-                     time: Option[TimeAlive] = None,
-                     memoryUsage: Option[MemoryUsage] = None) extends Stat
+  case class Process(pid: Pid, processInfo: ProcessInfoBin) extends DataModel
 
-  case class Pid(pid: Int) extends Stat
+  case class ProcessInfoBin(infoLeft: ProcessInfo, infoRight: Option[ProcessInfo]) extends ProcessInfo
 
-  case class ProcessName(name: String) extends Stat
+  case class Pid(pid: Int) extends ProcessInfo
 
-  case class Cpu(usage: Double) extends Stat
+  case class ProcessName(name: String) extends ProcessInfo
 
-  case class TimeAlive(duration: Duration) extends Stat
+  case class Cpu(usage: Double) extends ProcessInfo
 
-  case class MemoryUsage(usage: Long) extends Stat
+  case class TimeAlive(duration: Duration) extends ProcessInfo
+
+  case class MemoryUsage(usage: Long) extends ProcessInfo
 
   object Picklers {
     implicit def basicPickler: PicklerPair[WSMessage] = CompositePickler[WSMessage].
@@ -66,11 +64,11 @@ object ModelX {
       concreteType[ExecuteCommand].
       concreteType[CommandResult].
       concreteType[TestWSMessage].
-      concreteType[SystemStatsUpdate]
+      concreteType[ProcessUpdate]
 
-    implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
-      concreteType[Stat].
-      concreteType[Process].
+    implicit def statPickler: PicklerPair[ProcessInfo] = CompositePickler[ProcessInfo].
+      concreteType[ProcessInfo].
+      concreteType[ProcessInfoBin].
       concreteType[Pid].
       concreteType[Cpu].
       concreteType[TimeAlive].

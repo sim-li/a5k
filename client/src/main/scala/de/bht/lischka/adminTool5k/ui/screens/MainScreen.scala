@@ -37,7 +37,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
   // View must handle incomming msgs when logged out for command replay
   def commonOps: Receive = {
-    case SystemStatsUpdate(update) => systemStatsSection ! SystemStatsUpdate(update)
+    case ProcessUpdate(update) => systemStatsSection ! ProcessUpdate(update)
 
 
     //@TODO ShowExecuteCommand?

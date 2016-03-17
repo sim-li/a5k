@@ -20,12 +20,12 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
   def dataColumns(line: String): Array[String] = line.replaceAll("[ ]+", " ").trim.split(" ")
 
   //@TODO: Yuck! Reduce this! Using this series of copy commands can't be performant!
-  def fieldsFromLine(line: String): Option[Process] = {
+  def fieldsFromLine(line: String): Option[ProcessInfoBin] = {
     val fieldNamesInExpectedOrder = List("%CPU", "COMMAND", "MEM", "PID", "TIME")
     val fields: Array[(String, String)] = (titleColumnEntries zip dataColumns(line))
       .filter(c => fieldNamesInExpectedOrder.contains(c._1))
       .sorted
-    val constructedLine = (new Process() /: fields)((l: Process, f: (String, String)) =>
+    val constructedLine = (new ProcessInfoBin() /: fields)((l: ProcessInfoBin, f: (String, String)) =>
       f match {
         case CpuMatcher(usage: Double) => l.copy(cpu=Some(Cpu(usage)))
         case ProcessNameMatcher(name) => l.copy(name=Some(ProcessName(name)))
@@ -42,12 +42,12 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
     }
   }
 
-  def rows: List[Process] = {
+  def rows: List[ProcessInfoBin] = {
     val interestingPart: String = pidOutput.split(PidParsingUtils.pattern.toString)(1)
-    (List[Process]() /: interestingPart.split("\n")) {
-      (buffer: List[Process], line: String) =>
+    (List[ProcessInfoBin]() /: interestingPart.split("\n")) {
+      (buffer: List[ProcessInfoBin], line: String) =>
         fieldsFromLine(line) match {
-          case Some(sysStatsLine: Process) => sysStatsLine :: buffer
+          case Some(sysStatsLine: ProcessInfoBin) => sysStatsLine :: buffer
           case _ => buffer
         }
     }

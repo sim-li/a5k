@@ -2,7 +2,7 @@ package de.bht.lischka.adminTool5k.ui.widgets.processes
 
 import java.util.UUID
 import akka.actor.{Actor, Props}
-import de.bht.lischka.adminTool5k.ModelX.{Stat, SystemStatsUpdate, Process}
+import de.bht.lischka.adminTool5k.ModelX.{ProcessInfo, ProcessUpdate, ProcessInfoBin}
 import org.scalajs.jquery.{jQuery => jQ}
 import org.scalajs.dom
 import org.scalajs.dom.{Element, document}
@@ -16,9 +16,12 @@ object ProcessRow {
 class ProcessRow(tableRootId: String, uuid: UUID) extends Actor {
   //@TODO: PID to seq, then for (pid in <- xyz yield div ( )
 
-  def buildRow(process: Process) = tr(id := uuid.toString)(buildRowContent(process)).render
+  def buildRow(process: ProcessInfoBin) = tr(id := uuid.toString)(buildRowContent(process)).render
 
-  def buildRowContent(process: Process) = {
+  def buildRowContent(process: ProcessInfoBin) = {
+    process match {
+      case pid: Pid ::
+    }
     Seq(
       process.pid.map(tableColumn _),
       process.name.map(tableColumn _),
@@ -28,10 +31,10 @@ class ProcessRow(tableRootId: String, uuid: UUID) extends Actor {
     )
   }
 
-  def tableColumn(stat: Stat) = td(stat.toString)
+  def tableColumn(stat: ProcessInfo) = td(stat.toString)
 
   def receive: Receive = {
-    case process: Process =>
+    case process: ProcessInfoBin =>
 
       val table = Option(document.getElementById(tableRootId))
       table match {

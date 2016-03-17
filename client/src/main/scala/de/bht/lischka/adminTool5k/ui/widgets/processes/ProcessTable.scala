@@ -2,7 +2,7 @@ package de.bht.lischka.adminTool5k.ui.widgets.processes
 
 import java.util.UUID
 import akka.actor.{ActorRef, Actor, Props}
-import de.bht.lischka.adminTool5k.ModelX.{Pid, ShellCommand, SystemStatsUpdate, Process}
+import de.bht.lischka.adminTool5k.ModelX.{Pid, ShellCommand, ProcessUpdate, ProcessInfoBin}
 import org.scalajs.dom
 import org.scalajs.jquery.{jQuery => jQ}
 import rx._
@@ -54,9 +54,9 @@ class ProcessTable() extends Actor {
   }
 
   def active: Receive = {
-    case SystemStatsUpdate(statsLine: Process) =>
+    case ProcessUpdate(statsLine: ProcessInfoBin) =>
       statsLine.pid.foreach(processId => statsEntries.get(processId) match {
-        case Some(statsEntry: ActorRef) => statsEntry ! SystemStatsUpdate(statsLine)
+        case Some(statsEntry: ActorRef) => statsEntry ! ProcessUpdate(statsLine)
         case None =>
           val processRow = context.actorOf(ProcessRow.props(tableRootId))
           processRow ! statsLine
