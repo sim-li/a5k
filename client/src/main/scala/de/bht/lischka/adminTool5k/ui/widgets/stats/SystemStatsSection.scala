@@ -17,12 +17,15 @@ class SystemStatsSection() extends Actor {
   var statsEntries: Map[Pid, ActorRef] = Map()
 
   def receive: Receive = {
-    case SystemStatsUpdate(systemStatsLine: SystemStatsLine) =>
-      systemStatsLine.pid.foreach(pid => statsEntries.get(pid) match {
-          case Some(l: ActorRef) => l ! SystemStatsUpdate(systemStatsLine)
-          case None => statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
-        }
-      )
+    case SystemStatsUpdate(systemStatsLine: List[SystemStatsLine]) =>
+//      systemStatsLine.pid.foreach(pid => statsEntries.get(pid) match {
+//
+//
+//
+//          case Some(l: ActorRef) => l ! SystemStatsUpdate(systemStatsLine)
+//          case None => statsEntries += pid -> context.actorOf(SystemStatsEntry.props(systemStatsLine))
+//        }
+//      )
     case _ => println("Unhandled defualt case")
   }
 

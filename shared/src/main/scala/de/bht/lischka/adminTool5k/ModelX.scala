@@ -38,7 +38,7 @@ object ModelX {
 
   trait Stat extends DataModel
 
-  case class SystemStatsUpdate(stats: SystemStatsLine) extends WSMessage
+  case class SystemStatsUpdate(stats: List[SystemStatsLine]) extends WSMessage
 
   case class SystemStatsLine(pid: Option[Pid] = None,
                              processName: Option[ProcessName] = None,

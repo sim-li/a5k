@@ -19,12 +19,13 @@ class PidParser(resultHandler: ActorRef) extends Actor {
   val linuxCommand = "top -bn1"
 
   override def preStart = {
-    context.system.scheduler.schedule(1 seconds, 1 seconds, self, TimeToUpdate)
+    context.system.scheduler.schedule(5 seconds, 5 seconds, self, TimeToUpdate)
   }
 
   override def receive: Receive = {
-    case TimeToUpdate => PidParsingUtils(macCommand.!!).rows.map(systemStatsLine =>
-      resultHandler ! SystemStatsUpdate(systemStatsLine))
+    case TimeToUpdate =>
+      val update: List[SystemStatsLine] = PidParsingUtils(macCommand.!!).rows
+      resultHandler ! update
   }
 
   def randomCpuStat = Some(Cpu(r.nextDouble()))
