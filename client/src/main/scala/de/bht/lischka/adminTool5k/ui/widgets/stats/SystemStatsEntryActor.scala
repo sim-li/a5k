@@ -1,7 +1,7 @@
 package de.bht.lischka.adminTool5k.ui.widgets.stats
 
 import akka.actor.{Actor, Props}
-import de.bht.lischka.adminTool5k.ModelX.{SystemStatsUpdate, SystemStatsEntry}
+import de.bht.lischka.adminTool5k.ModelX.{SystemStatsUpdateRaw, SystemStatsEntry}
 import org.scalajs.jquery.{jQuery => jQ}
 import rx._
 
@@ -10,7 +10,6 @@ object SystemStatsEntryActor {
 }
 
 class SystemStatsEntryActor(systemStats: SystemStatsEntry) extends Actor {
-  import SystemStatsEntryActor._
 
   val view  = SystemStatsEntryView(Var(systemStats))
 
@@ -23,6 +22,7 @@ class SystemStatsEntryActor(systemStats: SystemStatsEntry) extends Actor {
       if(systemStats.pid != entry.pid) {
         println(s"Received UpdateEntry where PID ${systemStats.pid} doesn't match")
       } else {
+        println(s"Entry to stats! ${entry}")
         view.stats() = entry
       }
 

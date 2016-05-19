@@ -3,6 +3,7 @@ package de.bht.lischka.adminTool5k
 import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
+import de.bht.lischka.adminTool5k.pidparsing.PidParsingUtils
 
 object Router {
   def props = Props(new Router())
@@ -24,13 +25,19 @@ class Router extends Actor {
     case LoginUser(user: User) =>
       val session = sender()
       session ! SendMessage(LoginUser(user))
+      forwardMsg(LoginUser(user))
 
-    case sendMessage: SendMessage => forwardMsg(sendMessage)
+    case sendMessage: SendMessage =>
+      forwardMsg(sendMessage)
 
-    case wsMessage: WSMessage => forwardMsg(wsMessage)
+    case systemStatsUpdateRaw: SystemStatsUpdateRaw =>
+      val update: List[SystemStatsEntry] = PidParsingUtils(systemStatsUpdateRaw.rawStats).rows
+      self ! update
+
+    case wsMessage: WSMessage =>
+      forwardMsg(wsMessage)
 
     case x => println(s"Triggered default case with ${x}")
 
   }
-
 }

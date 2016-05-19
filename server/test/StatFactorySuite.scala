@@ -1,4 +1,4 @@
-import controllers.pidparsing.StatFactory
+import de.bht.lischka.adminTool5k.pidparsing.StatFactory
 import de.bht.lischka.adminTool5k.ModelX.Pid
 import utest._
 

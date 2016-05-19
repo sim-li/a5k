@@ -2,7 +2,7 @@ package controllers
 
 import de.bht.lischka.adminTool5k.ModelX._
 import utest._
-import controllers.pidparsing.PidParsingUtils
+import de.bht.lischka.adminTool5k.pidparsing.PidParsingUtils
 
 import scala.concurrent.duration._
 

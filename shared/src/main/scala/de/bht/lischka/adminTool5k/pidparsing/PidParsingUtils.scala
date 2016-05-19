@@ -1,4 +1,4 @@
-package controllers.pidparsing
+package de.bht.lischka.adminTool5k.pidparsing
 
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.extractors._
@@ -46,7 +46,6 @@ class PidParsingUtils(pidOutput: String, titleColumnEntries: Array[String]) {
     val interestingPart: String = pidOutput.split(PidParsingUtils.pattern.toString)(1)
     (List[SystemStatsEntry]() /: interestingPart.split("\n")) {
       (buffer: List[SystemStatsEntry], line: String) =>
-        println(line)
         fieldsFromLine(line) match {
           case Some(sysStatsLine: SystemStatsEntry) => sysStatsLine :: buffer
           case _ => buffer

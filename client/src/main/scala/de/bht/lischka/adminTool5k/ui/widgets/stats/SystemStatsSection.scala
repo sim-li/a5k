@@ -1,11 +1,13 @@
 package de.bht.lischka.adminTool5k.ui.widgets.stats
 
 import akka.actor.{ActorRef, Actor, Props}
-import de.bht.lischka.adminTool5k.ModelX.{Pid, ShellCommand, SystemStatsUpdate, SystemStatsEntry}
+import de.bht.lischka.adminTool5k.ModelX.{Pid, ShellCommand, SystemStatsUpdateRaw, SystemStatsEntry}
+import de.bht.lischka.adminTool5k.ui.widgets.stats.SystemStatsSection.SystemStatsUpdate
 import org.scalajs.jquery.{jQuery => jQ}
 
 object SystemStatsSection {
   def props = Props(new SystemStatsSection())
+  case class SystemStatsUpdate(allEntries: List[SystemStatsEntry])
 }
 
 class SystemStatsSection() extends Actor {

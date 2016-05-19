@@ -11,14 +11,14 @@ import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
   def props(router: ActorRef, session: ActorRef) = Props(new MainScreen(router, session))
-  case class HandleCommandExecution(command: String)
+  case class SendButtonClick(command: String)
 }
 
 class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   import MainScreen._
 
   var commandEntries: Map[UUID, ActorRef] = Map()
-  var systemStatsSection: ActorRef =  context.actorOf(SystemStatsSection.props, "system-stats-section")
+  val systemStatsSection: ActorRef = context.actorOf(SystemStatsSection.props, "system-stats-section")
 
   override def preStart: Unit = {
     registerCallback()
@@ -29,7 +29,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     jQ("#send_command_button") click {
       (event: JQueryEventObject) =>
         val commandTextfield = jQ("#command_textfield")
-        self ! HandleCommandExecution(commandTextfield.value().toString())
+        self ! SendButtonClick(commandTextfield.value().toString())
     }
   }
 
@@ -37,7 +37,9 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
   // View must handle incomming msgs when logged out for command replay
   def commonOps: Receive = {
-    case SystemStatsUpdate(update) => systemStatsSection ! SystemStatsUpdate(update)
+
+    // Route to SystemStatsSection
+    case SystemStatsUpdateRaw(update) => systemStatsSection ! SystemStatsUpdateRaw(update)
 
 
     //@TODO ShowExecuteCommand?
@@ -63,7 +65,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   }
 
   def loggedIn(user: User): Receive = commonOps orElse {
-    case HandleCommandExecution(cmd: String) => {
+    case SendButtonClick(cmd: String) => {
       val issuedCommand = ShellCommand(user, cmd)
       context.parent ! SendMessage(ExecuteCommand(issuedCommand))
       addShellCommandEntry(issuedCommand)
@@ -74,8 +76,6 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
     case x => println(s"Mainscreen hit default case ${x}")
   }
 
-  // Adapt ActorBinTree example and have command entries
-  // communicate with each other. Invent reason to make this necessary
   def addShellCommandEntry(issuedCommand: ShellCommand): Unit = {
     commandEntries += issuedCommand.issueInfo.id -> context.actorOf(ShellCommandEntry.props(issuedCommand))
   }

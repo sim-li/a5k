@@ -39,7 +39,7 @@ object ModelX {
 
   trait Stat extends DataModel
 
-  case class SystemStatsUpdate(stats: List[SystemStatsEntry]) extends WSMessage
+  case class SystemStatsUpdateRaw(rawStats: String) extends WSMessage
 
   case class SystemStatsEntry(pid: Option[Pid] = None,
                               processName: Option[ProcessName] = None,
@@ -66,8 +66,8 @@ object ModelX {
       concreteType[LoginUser].
       concreteType[ExecuteCommand].
       concreteType[CommandResult].
-      concreteType[TestWSMessage].
-      concreteType[SystemStatsUpdate]
+      concreteType[SystemStatsUpdateRaw].
+      concreteType[TestWSMessage]
 
     implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
       concreteType[Stat].
@@ -77,5 +77,4 @@ object ModelX {
       concreteType[TimeAlive].
       concreteType[MemoryUsage]
   }
-
 }
