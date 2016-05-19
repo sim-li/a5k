@@ -24,7 +24,7 @@ class PidParser(resultHandler: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case TimeToUpdate =>
-      val update: List[SystemStatsLine] = PidParsingUtils(macCommand.!!).rows
+      val update: List[SystemStatsEntry] = PidParsingUtils(macCommand.!!).rows
       resultHandler ! update
   }
 

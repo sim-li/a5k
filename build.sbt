@@ -5,7 +5,6 @@ import org.scalajs.jsenv.{JSEnv, JSConsole}
 import org.scalajs.core.tools.logging.Logger
 import sbt.Project.projectToRef
 import org.scalajs.core.ir.Utils._
-
 lazy val scalaV = "2.11.7"
 
 lazy val server = (project in file("server")).settings(
@@ -64,30 +63,3 @@ lazy val sharedJs = shared.js
 
 // loads the Play project at sbt startup
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
-
-/** Run a class in a given environment using a given launcher */
-def jsRun(env: JSEnv, cp: CompleteClasspath, mainCl: String,
-          launcher: VirtualJSFile, jsConsole: JSConsole, log: Logger) = {
-
-  log.info("Running " + mainCl)
-  log.debug(s"with JSEnv of type ${env.getClass()}")
-  log.debug(s"with classpath of type ${cp.getClass}")
-  // Actually run code
-  env.jsRunner(cp, launcher, log, jsConsole).run()
-}
-
-def launcherContent(mainCl: String) = {
-  val parts = mainCl.split('.').map(s => s"""["${escapeJS(s)}"]""").mkString
-  s"${CoreJSLibs.jsGlobalExpr}$parts().main();\n"
-}
-
-def memLauncher(mainCl: String) = {
-  new MemVirtualJSFile("Generated launcher file")
-    .withContent(launcherContent(mainCl))
-}
-
-//test in Test := {
-//  val mainClass = "path.to.AnotherClassWithTests"
-//  jsRun((jsEnv in Test).value, (scalaJSExecClasspath in Test).value, mainClass,
-//    memLauncher(mainClass), (scalaJSConsole in Test).value, streams.value.log)
-//}

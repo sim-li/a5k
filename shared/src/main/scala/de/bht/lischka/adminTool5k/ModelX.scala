@@ -1,6 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import java.util.{UUID, Date}
+import akka.actor.ActorRef
 import de.bht.lischka.adminTool5k.ModelX.Stat
 import prickle.{CompositePickler, PicklerPair}
 
@@ -38,13 +39,13 @@ object ModelX {
 
   trait Stat extends DataModel
 
-  case class SystemStatsUpdate(stats: List[SystemStatsLine]) extends WSMessage
+  case class SystemStatsUpdate(stats: List[SystemStatsEntry]) extends WSMessage
 
-  case class SystemStatsLine(pid: Option[Pid] = None,
-                             processName: Option[ProcessName] = None,
-                             cpu: Option[Cpu] = None,
-                             time: Option[TimeAlive] = None,
-                             memoryUsage: Option[MemoryUsage] = None) extends Stat
+  case class SystemStatsEntry(pid: Option[Pid] = None,
+                              processName: Option[ProcessName] = None,
+                              cpu: Option[Cpu] = None,
+                              time: Option[TimeAlive] = None,
+                              memoryUsage: Option[MemoryUsage] = None) extends Stat
 
   case class Pid(pid: Int) extends Stat
 
@@ -70,7 +71,7 @@ object ModelX {
 
     implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
       concreteType[Stat].
-      concreteType[SystemStatsLine].
+      concreteType[SystemStatsEntry].
       concreteType[Pid].
       concreteType[Cpu].
       concreteType[TimeAlive].

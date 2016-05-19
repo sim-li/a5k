@@ -1,16 +1,15 @@
 package de.bht.lischka.adminTool5k.ui.widgets.stats
 
-import de.bht.lischka.adminTool5k.ModelX.{Stat, SystemStatsLine}
+import de.bht.lischka.adminTool5k.ModelX.{Stat, SystemStatsEntry}
 import rx._
-
 import scalatags.JsDom.all._
 import scalatags.rx.all._
 
 object SystemStatsEntryView {
-  def apply(stats: Var[SystemStatsLine]) = new SystemStatsEntryView(stats)
+  def apply(stats: Var[SystemStatsEntry]) = new SystemStatsEntryView(stats)
 }
 
-class SystemStatsEntryView(val stats: Var[SystemStatsLine]) {
+class SystemStatsEntryView(val stats: Var[SystemStatsEntry]) {
   import rx._
 
   //@TODO: Replace this repetitive pattern, switch to actors/jquery

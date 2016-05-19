@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.ui.widgets.commandlist.ShellCommandEntry
-import de.bht.lischka.adminTool5k.ui.widgets.stats.{SystemStatsSection, SystemStatsEntry}
+import de.bht.lischka.adminTool5k.ui.widgets.stats.{SystemStatsSection, SystemStatsEntryActor$}
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {

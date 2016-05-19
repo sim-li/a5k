@@ -1,0 +1,45 @@
+.
+├── client
+│   └── ...
+│       ├── AdminTool5kClient.scala
+│       ├── Router.scala
+│       ├── ui
+│       │   ├── BootstrapCSS.scala
+│       │   ├── screens
+│       │   │   ├── LoginScreen.scala
+│       │   │   └── MainScreen.scala
+│       │   └── widgets
+│           │       ├── commandlist
+│       │       │   ├── ShellCommandEntry.scala
+│       │       │   └── ShellCommandEntryView.scala
+│       │       └── stats
+│       │           ├── SystemStatsEntryActor.scala
+│       │           ├── SystemStatsEntryView.scala
+│       │           └── SystemStatsSection.scala
+│       └── ws
+│           └── WebsocketProxyClient.scala
+├── shared
+│   └── ...
+│       └── adminTool5k
+│          ├── InternalMessages.scala
+│          ├── ModelX.scala
+│          ├── Session.scala
+│          ├── extractors
+│          │   ├── CpuMatcher.scala
+│          │   ├── MemoryUsageMatcher.scala
+│          │   ├── PidMatcher.scala
+│          │   ├── ProcessNameMatcher.scala
+│          │   └── TimeMatcher.scala
+│          ├── pickling
+│          │   ├── PickleSupport.scala
+│          │   ├── Pickling.scala
+│          │   └── Unpickling.scala
+├── server
+|   └── ...
+│       ├── Application.scala
+│       ├── CommandExecutor.scala
+│       ├── Router.scala
+│       └── pidparsing
+│           ├── PidParser.scala
+│           ├── PidParsingUtils.scala
+│           └── StatFactory.scala

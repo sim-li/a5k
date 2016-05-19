@@ -75,7 +75,7 @@ object PidParserSuite extends utest.TestSuite {
           val utils = PidParsingUtils(pidFakeInput)
           assertSystemStatsLinesEqual(
             utils.fieldsFromLine(correctlyFormattedLine),
-            SystemStatsLine(
+            SystemStatsEntry(
               pid = Some(Pid(7515)),
               processName = Some(ProcessName("top")),
               cpu = Some(Cpu(2.6)),
@@ -92,7 +92,7 @@ object PidParserSuite extends utest.TestSuite {
           val utils = PidParsingUtils(pidFakeInput)
           assertSystemStatsLinesEqual(
             utils.fieldsFromLine(correctlyFormattedLine),
-            SystemStatsLine(
+            SystemStatsEntry(
               pid = Some(Pid(7269)),
               processName = Some(ProcessName("plugin-conta")),
               cpu = Some(Cpu(0.8)),
@@ -119,21 +119,21 @@ object PidParserSuite extends utest.TestSuite {
             7510  login        0.0   00:00.19 2     0    28    508K   0B     836K   7510
           """
           val expected = Set(
-            SystemStatsLine(
+            SystemStatsEntry(
               Some(Pid(7515)),
               Some(ProcessName("top")),
               Some(Cpu(2.6)),
               Some(TimeAlive(Duration(4270, MILLISECONDS))),
               Some(MemoryUsage(2168 * 1024))   //@TODO: Convert if other unit than K, write testcase for "M"
             ),
-            SystemStatsLine(
+            SystemStatsEntry(
               Some(Pid(7511)),
               Some(ProcessName("bash")),
               Some(Cpu(0.0)),
               Some(TimeAlive(Duration(20, MILLISECONDS))),
               Some(MemoryUsage(44 * 1024))
             ),
-            SystemStatsLine(
+            SystemStatsEntry(
               Some(Pid(7510)),
               Some(ProcessName("login")),
               Some(Cpu(0.0)),
@@ -148,9 +148,9 @@ object PidParserSuite extends utest.TestSuite {
     }
   }
 
-  def assertSystemStatsLinesEqual(actual: Option[SystemStatsLine], expected: SystemStatsLine): Unit = {
+  def assertSystemStatsLinesEqual(actual: Option[SystemStatsEntry], expected: SystemStatsEntry): Unit = {
     val a = actual match {
-      case Some(s: SystemStatsLine) =>
+      case Some(s: SystemStatsEntry) =>
         assert(
           expected.pid == s.pid,
           expected.processName == s.processName,

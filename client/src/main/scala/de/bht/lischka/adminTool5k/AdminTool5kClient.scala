@@ -6,7 +6,6 @@ import akka.actor._
 import akka.event.Logging
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
 import de.bht.lischka.adminTool5k.ModelX._
-import de.bht.lischka.adminTool5k.supervision.Router
 import de.bht.lischka.adminTool5k.ui.screens.{MainScreen, LoginScreen}
 import de.bht.lischka.adminTool5k.ws.WebsocketProxyClient
 import org.scalajs.dom
@@ -21,6 +20,7 @@ object Application {
 }
 
 class Application extends Actor {
+  val invalidMessageChannel = context.actorOf(InvalidMessageChannel.props)
   val router = context.actorOf(Router.props)
   val websocketProxy = context.actorOf(WebsocketProxyClient.props, "wsproxy")
   val session = context.actorOf(Session.props(websocketProxy, router), "session")
