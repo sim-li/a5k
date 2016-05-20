@@ -18,7 +18,7 @@ object Router {
 class Router extends Actor {
   var registeredReceivers: List[ActorRef] = List()
   var replay: List[SendMessage] = List()
-  var pidParser = context.actorOf(PidParser.props(self))
+  var pidParser = context.actorOf(PsExecutor.props(self))
 
   def forwardMsgToAllSessions(message: Any, ignoredReceiver: ActorRef) = {
     registeredReceivers.filter(_ != ignoredReceiver).foreach(_ ! message)

@@ -31,7 +31,7 @@ lazy val client = (project in file("client")).settings(
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.8.0",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.1",
-    //"com.lihaoyi" %%% "scalatags" % "0.5.4",
+    "com.lihaoyi" %%% "scalatags" % "0.5.4",
     "com.timushev" %%% "scalatags-rx" % "0.1.0"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")

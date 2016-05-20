@@ -26,7 +26,6 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
     */
   def loggedOut: Receive = handlePickling orElse {
     case LoginUser(user) =>
-      println("Got login user at session")
       context become loggedIn(user)
       router ! LoginUser(user)
       // TODO: Move this to Router or something more specific, triggers defualt case on client
@@ -44,7 +43,7 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
         case LoginUser(user: User) =>
           self ! LoginUser(user)
 
-        case u: SystemStatsUpdateRaw => println(s"Got sysStatsUpdate, ignoring it: $u")//Do not log, blocks browser.
+        case u: SystemStatsUpdateRaw => //Do not log
 
         case anyMsg => println(s"Got ${anyMsg} in logged out state")
       }

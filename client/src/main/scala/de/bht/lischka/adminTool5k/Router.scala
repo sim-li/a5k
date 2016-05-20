@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.pidparsing.PidParsingUtils
+import de.bht.lischka.adminTool5k.ui.widgets.stats.SystemStatsSection.SystemStatsUpdate
 
 object Router {
   def props = Props(new Router())
@@ -32,10 +33,9 @@ class Router extends Actor {
 
     case systemStatsUpdateRaw: SystemStatsUpdateRaw =>
       val update: List[SystemStatsEntry] = PidParsingUtils(systemStatsUpdateRaw.rawStats).rows
-      self ! update
+      forwardMsg(SystemStatsUpdate(update))
 
-    case wsMessage: WSMessage =>
-      forwardMsg(wsMessage)
+    case wsMessage: WSMessage => forwardMsg(wsMessage)
 
     case x => println(s"Triggered default case with ${x}")
 

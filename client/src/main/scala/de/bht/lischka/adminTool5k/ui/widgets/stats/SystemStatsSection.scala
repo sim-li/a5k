@@ -11,15 +11,14 @@ object SystemStatsSection {
 }
 
 class SystemStatsSection() extends Actor {
-  var statsEntries: Map[Pid, ActorRef] = Map()
-
   def receive: Receive = {
     case SystemStatsUpdate(allEntries: List[SystemStatsEntry]) =>
-      allEntries.foreach((entry: SystemStatsEntry) => entry.pid.foreach(pid => statsEntries.get(pid) match {
-          case Some(existingEntry: ActorRef) => existingEntry ! entry
-          case None => statsEntries += pid -> context.actorOf(SystemStatsEntryActor.props(entry))
-        }
-      ))
+      jQ("#stats_entry").empty()
+      jQ("#stats_entry").append(SystemStatsEntryView.renderTitleColumns)
+      val entriesOrderedByCpuUsage = allEntries.sortBy(_.cpu.map(c => c.usage)).reverse
+      entriesOrderedByCpuUsage.foreach(entry => jQ("#stats_entry").append(SystemStatsEntryView.renderStatLine(entry)))
+
     case _ => println("Unhandled default case")
   }
 }
+1

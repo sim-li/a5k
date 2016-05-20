@@ -6,7 +6,8 @@ import akka.actor.{Actor, ActorRef, Props}
 import de.bht.lischka.adminTool5k.InternalMessages.{RegisterListener, SendMessage}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.ui.widgets.commandlist.ShellCommandEntry
-import de.bht.lischka.adminTool5k.ui.widgets.stats.{SystemStatsSection, SystemStatsEntryActor$}
+import de.bht.lischka.adminTool5k.ui.widgets.stats.SystemStatsSection.SystemStatsUpdate
+import de.bht.lischka.adminTool5k.ui.widgets.stats.{SystemStatsSection}
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object MainScreen {
@@ -18,6 +19,7 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   import MainScreen._
 
   var commandEntries: Map[UUID, ActorRef] = Map()
+
   val systemStatsSection: ActorRef = context.actorOf(SystemStatsSection.props, "system-stats-section")
 
   override def preStart: Unit = {
@@ -37,11 +39,6 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
 
   // View must handle incomming msgs when logged out for command replay
   def commonOps: Receive = {
-
-    // Route to SystemStatsSection
-    case SystemStatsUpdateRaw(update) => systemStatsSection ! SystemStatsUpdateRaw(update)
-
-
     //@TODO ShowExecuteCommand?
     case ExecuteCommand(shellCommand) =>
       val id = shellCommand.issueInfo.id
@@ -65,6 +62,8 @@ class MainScreen(router: ActorRef, session: ActorRef) extends Actor {
   }
 
   def loggedIn(user: User): Receive = commonOps orElse {
+    case update: SystemStatsUpdate => systemStatsSection ! update
+
     case SendButtonClick(cmd: String) => {
       val issuedCommand = ShellCommand(user, cmd)
       context.parent ! SendMessage(ExecuteCommand(issuedCommand))

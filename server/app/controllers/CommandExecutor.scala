@@ -1,7 +1,6 @@
 package controllers
 
 import java.util.Date
-
 import akka.actor.{ActorRef, Props, Actor}
 import akka.actor.Actor.Receive
 import de.bht.lischka.adminTool5k.InternalMessages.SendMessage
