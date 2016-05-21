@@ -6,6 +6,7 @@ import de.bht.lischka.adminTool5k.ModelX.{LoginUser, User}
 import de.bht.lischka.adminTool5k.ui.screens.LoginScreen.LoginButtonClick
 import de.bht.lischka.adminTool5k.ws.WebsocketProxyClient
 import de.bht.lischka.adminTool5k.ws.WebsocketProxyClient.SocketOpen
+import org.scalajs.dom.window
 import org.scalajs.jquery.{jQuery => jQ, _}
 
 object LoginScreen {
@@ -20,9 +21,18 @@ class LoginScreen(session: ActorRef, websocketProxy: ActorRef) extends Actor {
   }
 
   def registerCallback() = {
-    jQ("#login_button") click {
+    val loginButton = jQ("#login_button")
+    loginButton click {
       (event: JQueryEventObject) => self ! LoginButtonClick
     }
+    val loginTextField = jQ("#login_textfield")
+    loginTextField.focus
+    jQ("#websocket_textfield").value(window.location.hostname)
+    loginTextField.keyup((eventData: JQueryEventObject) => {
+      if (eventData.which == 13) {
+        loginButton click
+      }
+    })
   }
 
   override def receive: Receive = {
