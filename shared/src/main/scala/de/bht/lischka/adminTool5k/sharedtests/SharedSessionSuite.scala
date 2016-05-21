@@ -50,7 +50,7 @@ object SharedSessionSuite {
 
       'loggedInUserDoesForwardMessageToWebsocket {
         val testMessage = PickledMessageForSending("serializedString")
-        probe.send(session, LoginUser(User("TestUser")))
+        probe.send(session, LoginUser(User(Some("TestUser"))))
         probe.send(session, testMessage)
         websocketOut.expectMsg(500 millis, "serializedString")
       }

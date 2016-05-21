@@ -32,19 +32,22 @@
         <p>
           This is a colaborative shell hacking application for educational purposes.
           <br>Enter a nickname to start administrating the remote system.</br>
+          <br>Be sure to review the WS-Server's IP if you're connecting from a different system.</br>
+          <br>If you're on the same machine, you should default to localhost.</br>
         </p>
         <div class='well'>
           <p></p>
           <form class='form-inline'>
-            <div class='form-group has-error'>
+            <div class='form-group'>
               <label class='control-label' id='name-field'>Nickname</label>
               <input class='form-control' id='login_textfield' placeholder='John Coffee' type='text'>
             </div>
+            <div class='form-group'>
+              <label class='control-label' id='websocket-field'>WebSocket Server IP</label>
+              <input class='form-control' id='websocket_textfield' value='localhost'  type='text'>
+            </div>
             <button class='btn btn-primary' id='login_button' type='button'>Start hacking</button>
           </form>
-        </div>
-        <div class='alert alert-danger' role='alert'>
-          <div class='alert-link'>ABC</div>
         </div>
       </div>
     </div>
@@ -64,7 +67,11 @@
             </div>
           </div>
         </div>
-       <div id = 'process_section_target'></div>
+        <div class='col-md-2' id='stats_section'>
+
+              <table class="table table-striped" id='stats_entry'>
+              </table>
+        </div>
     <script>
       de.bht.lischka.adminTool5k.AdminTool5kClient().main()
     </script>

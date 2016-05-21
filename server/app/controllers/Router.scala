@@ -3,7 +3,6 @@ import java.util.Date
 import javax.management.modelmbean.RequiredModelMBean
 import akka.actor.{Actor, Props, ActorRef}
 import controllers.Router.{RememberForReplay, ForwardToAllSessions, TestListReceivers}
-import controllers.pidparsing.PidParser
 import de.bht.lischka.adminTool5k.InternalMessages.{RequestReplay, SendMessage, RegisterListener}
 import de.bht.lischka.adminTool5k.ModelX._
 import de.bht.lischka.adminTool5k.Session
@@ -19,7 +18,7 @@ object Router {
 class Router extends Actor {
   var registeredReceivers: List[ActorRef] = List()
   var replay: List[SendMessage] = List()
-  var systemStatsSection = context.actorOf(PidParser.props(self))
+  var pidParser = context.actorOf(PsExecutor.props(self))
 
   def forwardMsgToAllSessions(message: Any, ignoredReceiver: ActorRef) = {
     registeredReceivers.filter(_ != ignoredReceiver).foreach(_ ! message)
@@ -51,7 +50,8 @@ class Router extends Actor {
           val commandExecutor = context.actorOf(CommandExecutor.props(resultHandler = self))
           commandExecutor ! ExecuteCommand(shellCommand)
 
-        case systemStatsUpdate: ProcessUpdate => forwardMsgToAllSessions(SendMessage(systemStatsUpdate), self)
+        case systemStatsUpdate: SystemStatsUpdateRaw =>
+          forwardMsgToAllSessions(SendMessage(systemStatsUpdate), self)
 
         case anything => println(s"Triggered default case in Router, got ${anything}")
       }

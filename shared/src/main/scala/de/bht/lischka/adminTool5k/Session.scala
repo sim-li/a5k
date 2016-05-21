@@ -28,6 +28,7 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
     case LoginUser(user) =>
       context become loggedIn(user)
       router ! LoginUser(user)
+      // TODO: Move this to Router or something more specific, triggers defualt case on client
       router ! RequestReplay
 
     /**
@@ -42,16 +43,16 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
         case LoginUser(user: User) =>
           self ! LoginUser(user)
 
-        case anyMsg =>
-        //@TODO: Handle defualt case, caution: SystemStatsUpdate flies in with brutal frequency
+        case u: SystemStatsUpdateRaw => //Do not log
+
+        case anyMsg => println(s"Got ${anyMsg} in logged out state")
       }
   }
 
   def loggedIn(user: User): Receive = handlePickling orElse {
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => router ! wsMessage
 
-    case PickledMessageForSending(msg: String) =>
-      websocketOut ! msg
+    case PickledMessageForSending(msg: String) => websocketOut ! msg
 
     case Replay(replay) => replay.reverse.foreach((msg: SendMessage) => self ! msg)
 

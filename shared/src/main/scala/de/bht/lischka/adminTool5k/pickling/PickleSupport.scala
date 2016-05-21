@@ -15,7 +15,6 @@ trait PickleSupport {
 
   def handlePickling: Receive = {
     case serializedString: String => unpickling ! serializedString
-    case SendMessage(msg: WSMessage) =>
-      pickling ! msg
+    case SendMessage(msg: WSMessage) => pickling ! msg
   }
 }

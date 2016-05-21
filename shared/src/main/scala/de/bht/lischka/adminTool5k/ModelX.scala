@@ -1,9 +1,7 @@
 package de.bht.lischka.adminTool5k
 
 import java.util.{UUID, Date}
-import de.bht.lischka.adminTool5k.ModelX.ProcessInfo
 import prickle.{CompositePickler, PicklerPair}
-
 import scala.concurrent.duration.Duration
 
 object ModelX {
@@ -12,13 +10,9 @@ object ModelX {
 
   trait DataModel extends WSMessage
 
-  object User {
-    def none = User("")
-  }
-
   case class TestWSMessage(description: String) extends WSMessage
 
-  case class User(name: String) extends DataModel
+  case class User(name: Option[String]) extends DataModel
 
   case class LoginUser(user: User) extends WSMessage
 
@@ -32,27 +26,29 @@ object ModelX {
 
   case class CommandResult(shellCommand: ShellCommand) extends WSMessage
 
-  case class ExecutionInfo(response: String, commandExecuted: Date, success: Boolean) extends DataModel
+  case class ExecutionInfo(response: String, executedTime: Date, success: Boolean) extends DataModel
 
-  case class IssueInfo(user: User, id: UUID = UUID.randomUUID(), commandIssued: Date = new Date()) extends DataModel
+  case class IssueInfo(user: User, id: UUID = UUID.randomUUID(), issueTime: Date = new Date()) extends DataModel
 
-  trait ProcessInfo extends DataModel
+  trait Stat extends DataModel
 
-  case class ProcessUpdate(process: Process) extends WSMessage
+  case class SystemStatsUpdateRaw(rawStats: String) extends WSMessage
 
-  case class Process(pid: Pid, processInfo: ProcessInfoBin) extends DataModel
+  case class SystemStatsEntry(pid: Option[Pid] = None,
+                              processName: Option[ProcessName] = None,
+                              cpu: Option[Cpu] = None,
+                              time: Option[TimeAlive] = None,
+                              memoryUsage: Option[MemoryUsage] = None) extends Stat
 
-  case class ProcessInfoBin(infoLeft: ProcessInfo, infoRight: Option[ProcessInfo]) extends ProcessInfo
+  case class Pid(pid: Int) extends Stat
 
-  case class Pid(pid: Int) extends ProcessInfo
+  case class ProcessName(name: String) extends Stat
 
-  case class ProcessName(name: String) extends ProcessInfo
+  case class Cpu(usage: Double) extends Stat
 
-  case class Cpu(usage: Double) extends ProcessInfo
+  case class TimeAlive(duration: Duration) extends Stat
 
-  case class TimeAlive(duration: Duration) extends ProcessInfo
-
-  case class MemoryUsage(usage: Long) extends ProcessInfo
+  case class MemoryUsage(usage: Long) extends Stat
 
   object Picklers {
     implicit def basicPickler: PicklerPair[WSMessage] = CompositePickler[WSMessage].
@@ -63,16 +59,15 @@ object ModelX {
       concreteType[LoginUser].
       concreteType[ExecuteCommand].
       concreteType[CommandResult].
-      concreteType[TestWSMessage].
-      concreteType[ProcessUpdate]
+      concreteType[SystemStatsUpdateRaw].
+      concreteType[TestWSMessage]
 
-    implicit def statPickler: PicklerPair[ProcessInfo] = CompositePickler[ProcessInfo].
-      concreteType[ProcessInfo].
-      concreteType[ProcessInfoBin].
+    implicit def statPickler: PicklerPair[Stat] = CompositePickler[Stat].
+      concreteType[Stat].
+      concreteType[SystemStatsEntry].
       concreteType[Pid].
       concreteType[Cpu].
       concreteType[TimeAlive].
       concreteType[MemoryUsage]
   }
-
 }

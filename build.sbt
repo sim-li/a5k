@@ -5,12 +5,10 @@ import org.scalajs.jsenv.{JSEnv, JSConsole}
 import org.scalajs.core.tools.logging.Logger
 import sbt.Project.projectToRef
 import org.scalajs.core.ir.Utils._
-
 lazy val scalaV = "2.11.7"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
-  logLevel := sbt.Level.Warn,
   pipelineStages := Seq(scalaJSProd/*, gzip*/),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
@@ -28,13 +26,12 @@ lazy val server = (project in file("server")).settings(
 
 lazy val client = (project in file("client")).settings(
   scalaVersion := scalaV,
-  logLevel := sbt.Level.Warn,
   persistLauncher := true,
   persistLauncher in Test := false,
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.8.0",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.1",
-    //"com.lihaoyi" %%% "scalatags" % "0.5.4",
+    "com.lihaoyi" %%% "scalatags" % "0.5.4",
     "com.timushev" %%% "scalatags-rx" % "0.1.0"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework")
@@ -51,7 +48,6 @@ lazy val client = (project in file("client")).settings(
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(scalaVersion := scalaV,
-  logLevel := sbt.Level.Warn,
     libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
     "com.lihaoyi" %%% "pprint" % "0.3.6",
@@ -67,9 +63,3 @@ lazy val sharedJs = shared.js
 
 // loads the Play project at sbt startup
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
-
-
-test in Test := {
-  val log = streams.value.log
-  log.warn(s"Test task is ${test}")
-}

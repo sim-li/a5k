@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import de.bht.lischka.adminTool5k.ModelX.{User, WSMessage}
 
 /**
-  * Internal Messages are really to be treated as internal.
+  * Internal Command Messages are really to be treated as internal.
   * Before sending over Socket, the content of the case
   * class (a WSMessage) has to be unwrapped.
   *
@@ -13,6 +13,8 @@ import de.bht.lischka.adminTool5k.ModelX.{User, WSMessage}
   *
   */
 object InternalMessages {
+  case class InvalidMessage(sender: ActorRef, receiver: ActorRef, message: Any)
+
   case class SendMessage(msg: WSMessage)
 
   case class PickledMessageForSending(msg: String)

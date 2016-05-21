@@ -2,75 +2,62 @@ package de.bht.lischka.adminTool5k.ui.widgets.commandlist
 
 import de.bht.lischka.adminTool5k.ModelX.{WSMessage, ShellCommand}
 import de.bht.lischka.adminTool5k.ui.BootstrapCSS
-import rx._
-
+import scalatags.JsDom
 import scalatags.JsDom.all._
-import scalatags.rx.all._
 
 object ShellCommandEntryView {
-  def apply(shellCommand: Var[ShellCommand]) = new ShellCommandEntryView(shellCommand)
+  def apply(shellCommand: ShellCommand) = new ShellCommandEntryView(shellCommand)
 }
 
-class ShellCommandEntryView(val shellCommand: Var[ShellCommand]) {
-  import rx._
+class ShellCommandEntryView(shellCommand: ShellCommand) {
+  val STANDARD_WAITING_TEXT = "Executing..."
 
-  val commandResponseText: Rx[String] = Rx { shellCommand().executionInfo match {
-    case Some(executionInfo) => executionInfo.response
-    case _ => "Executing..."
-  }}
-
-  val issueDate: Rx[String] = Rx { shellCommand().issueInfo.commandIssued.toString() }
-
-  val executionDate: Rx[String] = Rx { shellCommand().executionInfo match {
-    case Some(executionInfo) => executionInfo.commandExecuted.toString()
-    case _ => ""
-  }}
-
-  val userName: Rx[String] = Rx { shellCommand().issueInfo.user.name }
-
-  val command: Rx[String] = Rx { shellCommand().command }
-
-  // @TODO: Parse this nicely.
-  def formatResponse(responseText: String) = {
-    responseText.replace("\n", "<br>").replace(" ", "&nbsp;")
-  }
-
-  val shellCommandEntry =
-    div(cls:=BootstrapCSS.list_group_item)(
-      userAndCommandNameSection,
-      commandResponseSection,
-      issueAndExecutionInfoSection
+  val divContainerWithContents = div(id:= shellCommand.issueInfo.id.toString, cls:=BootstrapCSS.list_group_item) (
+      contents
    )
+
+  def contents() = div(
+    userAndCommandNameSection,
+    commandResponseSection,
+    issueAndExecutionInfoSection
+  )
 
   def userAndCommandNameSection() = {
     h4(cls:=BootstrapCSS.list_group_item_heading) (
-      span(cls:=BootstrapCSS.badge) (userName),
-      p(command)
+      shellCommand.issueInfo.user.name,
+      p(span(cls:="kbd")(shellCommand.command))
     )
   }
 
   def commandResponseSection() = {
-    p(cls:=BootstrapCSS.list_group_item_text)(
-      code(
-        h6(
-          commandResponseText
-        )
+    p(cls:=BootstrapCSS.list_group_item_text) (
+      //Bootstrap Code Section
+      pre(
+          shellCommand.executionInfo.map(e => formatResponse(e.response))
       )
+    )
+  }
+
+  def formatResponse(responseText: String) = {
+    (table /: responseText.split("\n"))((buffer, line: String) =>
+      buffer(tr(line))
     )
   }
 
   def issueAndExecutionInfoSection() = {
-    h6(cls:=BootstrapCSS.list_group_item_footer_text_right)(
+    h6(cls:=BootstrapCSS.list_group_item_footer_text_right) (
       div(
-        b(issueDate)
+        "Issued at ", b(shellCommand.issueInfo.issueTime.toString)
       ),
       div(
-        b(
-          executionDate
+        "Executed at ", b(
+          shellCommand.executionInfo.map(e => e.executedTime.toString)
         )
       )
     )
   }
 
-  def render = shellCommandEntry.render
+  def renderContainer = divContainerWithContents.render
+
+  def renderContents = contents.render
 }
