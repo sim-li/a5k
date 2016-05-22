@@ -21,29 +21,24 @@ class Session(websocketProxy: ActorRef, router: ActorRef) extends Actor with Pic
 
   override def receive: Receive = loggedOut
 
-  /**
-    * Pickling reacts to SendMessage
-    */
   def loggedOut: Receive = handlePickling orElse {
-    case LoginUser(user) =>
-      context become loggedIn(user)
-      router ! LoginUser(user)
-
     /**
      *  TODO: This just lets everything through, but was meant to block
       *  messages when logged out.
      */
-    case PickledMessageForSending(msg: String) => websocketProxy ! msg
+    case LoginUser(user) =>
+      context become loggedIn(user)
+      router ! LoginUser(user)
 
-    case UnpickledMessageFromNetwork(wsMessage: WSMessage ) =>
-      wsMessage match {
-        case LoginUser(user: User) =>
-          self ! LoginUser(user)
+    //Acts as filter
+    case PickledMessageForSending(msg: String) => //websocketProxy ! msg
 
-        case u: SystemStatsUpdateRaw => //Do not log
+    //Acts as filter
+    case u: SystemStatsUpdateRaw => //Do not log
 
-        case anyMsg => println(s"Got ${anyMsg} in logged out state")
-      }
+    case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => self ! wsMessage
+
+    case anyMsg => println(s"Got ${anyMsg} in logged in state")
   }
 
   def loggedIn(user: User): Receive = handlePickling orElse {

@@ -18,5 +18,6 @@ class CommandExecutor(resultReceiver: ActorRef) extends Actor {
       val bashResult = shellCommand.command.!!
       val cmdResponse = shellCommand.copy(executionInfo = Some(ExecutionInfo(bashResult, new Date(), true)))
       resultReceiver ! CommandResult(cmdResponse)
+      context.stop(self)
   }
 }
