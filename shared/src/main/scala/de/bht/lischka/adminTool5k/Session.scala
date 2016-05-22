@@ -11,7 +11,7 @@ object Session {
   case class Replay(replay: List[SendMessage])
 }
 
-class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with PickleSupport {
+class Session(websocketProxy: ActorRef, router: ActorRef) extends Actor with PickleSupport {
   import ModelX._
 
 
@@ -28,15 +28,12 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
     case LoginUser(user) =>
       context become loggedIn(user)
       router ! LoginUser(user)
-      // TODO: Move this to Router or something more specific, triggers defualt case on client
-      router ! RequestReplay
 
     /**
      *  TODO: This just lets everything through, but was meant to block
       *  messages when logged out.
      */
-    case PickledMessageForSending(msg: String) =>
-      websocketOut ! msg
+    case PickledMessageForSending(msg: String) => websocketProxy ! msg
 
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) =>
       wsMessage match {
@@ -52,7 +49,7 @@ class Session(websocketOut: ActorRef, router: ActorRef) extends Actor with Pickl
   def loggedIn(user: User): Receive = handlePickling orElse {
     case UnpickledMessageFromNetwork(wsMessage: WSMessage ) => router ! wsMessage
 
-    case PickledMessageForSending(msg: String) => websocketOut ! msg
+    case PickledMessageForSending(msg: String) => websocketProxy ! msg
 
     case Replay(replay) => replay.reverse.foreach((msg: SendMessage) => self ! msg)
 

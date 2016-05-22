@@ -59,8 +59,7 @@ class WebsocketProxyClient extends Actor {
 
     case ReceiveMessage(messageEvent: MessageEvent) => context.parent ! messageEvent.data.toString()
 
-    case msg: String =>
-      socket.send(msg)
+    case msg: String => socket.send(msg)
 
     case ConnectionClosed => become(closed)
 

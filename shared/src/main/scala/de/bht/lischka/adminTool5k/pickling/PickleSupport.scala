@@ -9,11 +9,11 @@ import de.bht.lischka.adminTool5k.ModelX.WSMessage
   * http://coding-journal.com/why-is-my-akka-actor-getting-deadletters-as-sender/
   */
 trait PickleSupport extends Actor {
-    val pickling = context.actorOf(Pickling.props)
-    val unpickling = context.actorOf(Unpickling.props())
+  val pickling = context.actorOf(Pickling.props)
+  val unpickling = context.actorOf(Unpickling.props())
 
-    def handlePickling: Receive = {
-      case serializedString: String => unpickling ! serializedString
-      case SendMessage(msg: WSMessage) => pickling ! msg
-    }
+  def handlePickling: Receive = {
+    case serializedString: String => unpickling ! serializedString
+    case SendMessage(msg: WSMessage) => pickling ! msg
+  }
 }

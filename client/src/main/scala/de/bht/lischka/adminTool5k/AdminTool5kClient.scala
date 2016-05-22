@@ -28,6 +28,7 @@ class Application extends Actor {
   val mainScreen = context.actorOf(MainScreen.props(router, session), "mainScreen")
 
   override def receive: Receive = {
+    //This currnetly receives context parent messages from websocket proxy client!
     case anyMessage => session ! anyMessage
   }
 }

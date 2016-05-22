@@ -25,10 +25,10 @@ class Router extends Actor {
   }
 
   override def receive: Actor.Receive = {
+    case u: LoginUser => sender ! Replay(replay)
+
     case RegisterListener(newReceiver: ActorRef) =>
       registeredReceivers = newReceiver :: registeredReceivers
-
-    case RequestReplay => sender ! Replay(replay)
 
     case ForwardToAllSessions(msg, ignoredReceiver) => forwardMsgToAllSessions(msg, ignoredReceiver)
 
@@ -37,6 +37,7 @@ class Router extends Actor {
 
     case wsMessage: WSMessage =>
       wsMessage match {
+
         case CommandResult(cmdResponse)  =>
           val msg = SendMessage(CommandResult(cmdResponse))
           //@TODO: Remove this way of satisfying function parameters
